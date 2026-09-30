@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Insights — Sehat Haq</title>
+  <meta name="description" content="A free directory of special-education and disability services in Lahore — search by need, area, cost, and accessibility.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="icon-back" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></symbol>
+  <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M6.6 10.8a13 13 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.3 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20a1 1 0 0 1-1 1C10.9 21 3 13.1 3 4a1 1 0 0 1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.3 1L6.6 10.8Z"/></symbol>
+  <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.3 9h17.4M3.3 15h17.4M12 3c2.4 2.6 3.6 5.7 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.7-3.6-9s1.2-6.4 3.6-9Z"/></symbol>
+  <symbol id="icon-note" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h7M9 17h7"/></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-4 3.6-6.2 7.5-6.2s6.9 2.2 7.5 6.2"/></symbol>
+  <symbol id="icon-puzzle" viewBox="0 0 24 24"><path d="M9 4h4v2.2a2 2 0 1 0 0 3.6V12h3.2a2 2 0 1 1 0 4H16v4h-4v-2.2a2 2 0 1 0 0-3.6V12H8.8a2 2 0 1 1 0-4H9V4Z"/></symbol>
+  <symbol id="icon-ear" viewBox="0 0 24 24"><path d="M8 14c0 3 2 5 4.5 5S17 17 17 14c0-1.4-.6-2-1.5-2.8-1-1-1.7-2-1.7-3.7A4 4 0 0 0 6 7.5c0 1.2.5 1.8 1 2.5"/><path d="M8.5 14a2.3 2.3 0 0 0 2 2.3"/></symbol>
+  <symbol id="icon-speech" viewBox="0 0 24 24"><path d="M4 12a8 4.5 0 0 1 16 0 8 4.5 0 0 1-11.5 3.6L4 17l1.3-3.3A4.4 4.4 0 0 1 4 12Z"/></symbol>
+  <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5A1.5 1.5 0 0 0 20 18.5v-13Z"/></symbol>
+  <symbol id="icon-sprout" viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11C12 6 8 5 5 5c0 4 1.5 6.5 7 6Z"/><path d="M12 13c0-3.5 3-5 6-5.5.3 3.5-1 6.5-6 5.5Z"/></symbol>
+  <symbol id="icon-access" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.7"/><path d="M11 8v5l-4 4"/><path d="M11 12h6"/><path d="M9 22a4.5 4.5 0 1 1 4.4-5.4"/></symbol>
+  <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.3-8.8C1.4 8 2.7 5 5.9 4.4 8 4 10 5 12 7.5 14 5 16 4 18.1 4.4 21.3 5 22.6 8 21.3 11.2 19 15.6 12 20 12 20Z"/></symbol>
+  <symbol id="icon-dots" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></symbol>
+  <symbol id="icon-wheelchair" viewBox="0 0 24 24"><circle cx="16" cy="4.5" r="1.7"/><path d="M14.5 8H11l1 4h5l3 6"/><path d="M8 22a5 5 0 1 1 4.9-6H18"/></symbol>
+  <symbol id="icon-hands" viewBox="0 0 24 24"><path d="M7 11V6a2 2 0 1 1 4 0v5"/><path d="M11 10V4a2 2 0 1 1 4 0v7"/><path d="M15 10.5V6a2 2 0 1 1 4 0v8c0 3.5-2.5 6-6.5 6-3 0-4.7-1-6-3l-3-5.2c-.6-1 .3-2.3 1.5-2 .8.2 1.4.8 1.8 1.5L7 12"/></symbol>
+  <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="icon-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14"/><path d="M15 6v14"/></symbol>
+  <symbol id="icon-bar" viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></symbol>
+  <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></symbol>
+  <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></symbol>
+  <symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2Z"/><circle cx="16.5" cy="14.5" r="1"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">Sehat Haq</a>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="/" >Home</a>
+      <a href="/browse/" >Browse</a>
+      <a href="/insights/" aria-current="page">Insights</a>
+      <a class="btn btn-primary btn-nav" href="/find-support/">Customized Matches</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  
+
+<section class="page-head">
+  <div class="container">
+    <div class="page-head-panel">
+      <h1>What does our data show?</h1>
+    </div>
+  </div>
+</section>
+
+<section class="container insights">
+
+  <!-- ============================== GEOGRAPHY ============================== -->
+  <div class="insight-section">
+    <div class="section-header">
+      <h2>Geography</h2>
+      <p>How are services and facilities in Lahore distributed?</p>
+    </div>
+
+    
+<div class="map-panel" data-facility-map role="region" aria-label="Map of all facilities in the directory"></div>
+<script type="application/json" id="map-points">[{"lat": 31.41985829, "lon": 74.25994183, "name": "ABLE, Autism Behaviour Learning and Education, Lahore", "ownership": "Private", "slug": "able-autism-behaviour-learning-and-education-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/able-autism-behaviour-learning-and-education-lahore/"}, {"lat": 31.50089602, "lon": 74.35294863, "name": "Amin Maktab", "ownership": "Nonprofit", "slug": "amin-maktab", "type": "Therapy", "type_key": "therapy", "url": "/facility/amin-maktab/"}, {"lat": 31.5011212, "lon": 74.36470673, "name": "Autism Care Center", "ownership": "Private", "slug": "autism-care-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/autism-care-center/"}, {"lat": 31.49247365, "lon": 74.37590161, "name": "Autism Point", "ownership": "Nonprofit", "slug": "autism-point", "type": "Therapy", "type_key": "therapy", "url": "/facility/autism-point/"}, {"lat": 31.40003371, "lon": 74.28461626, "name": "Autism Resource Centre", "ownership": "Nonprofit", "slug": "autism-resource-centre", "type": "Therapy", "type_key": "therapy", "url": "/facility/autism-resource-centre/"}, {"lat": 31.49466421, "lon": 74.30089476, "name": "Child Welfare Center", "ownership": "Government", "slug": "child-welfare-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/child-welfare-center/"}, {"lat": 31.45916607, "lon": 74.25321557, "name": "CLC-Cradle to Crayons Learning Centre", "ownership": "Private", "slug": "clc-cradle-to-crayons-learning-centre", "type": "Therapy", "type_key": "therapy", "url": "/facility/clc-cradle-to-crayons-learning-centre/"}, {"lat": 31.55048834, "lon": 74.3208485, "name": "Dar-ul-Mussarat Lahore", "ownership": "Nonprofit", "slug": "dar-ul-mussarat-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/dar-ul-mussarat-lahore/"}, {"lat": 31.44067426, "lon": 74.3097626, "name": "Deaf Reach, Lahore", "ownership": "Nonprofit", "slug": "deaf-reach-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/deaf-reach-lahore/"}, {"lat": 31.46454522, "lon": 74.29155916, "name": "Dimensions: Institute For Autism, Special Education, Physical Rehabilitation \u0026 Psychological Services", "ownership": "Private", "slug": "dimensions-institute-for-autism-special-education-physical-rehabilitation-psychological-services", "type": "Therapy", "type_key": "therapy", "url": "/facility/dimensions-institute-for-autism-special-education-physical-rehabilitation-psychological-services/"}, {"lat": 31.47585993, "lon": 74.28047878, "name": "Global Institute for Autism, Lahore", "ownership": "Private", "slug": "global-institute-for-autism-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/global-institute-for-autism-lahore/"}, {"lat": 31.463012, "lon": 74.292616, "name": "Government National Special Education Centre, Johar Town-Lahore", "ownership": "Government", "slug": "government-national-special-education-centre-johar-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/government-national-special-education-centre-johar-town-lahore/"}, {"lat": 31.5669802, "lon": 74.430822, "name": "Government Special Education Centre, Wagha Town-Lahore", "ownership": "Government", "slug": "government-special-education-centre-wagha-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/government-special-education-centre-wagha-town-lahore/"}, {"lat": 31.52149079, "lon": 74.35530471, "name": "Govt. Central High School of Special Education for HIC, Gulberg-II Lahore.", "ownership": "Government", "slug": "govt-central-high-school-of-special-education-for-hic-gulberg-ii-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-central-high-school-of-special-education-for-hic-gulberg-ii-lahore/"}, {"lat": 31.56698895, "lon": 74.43081657, "name": "Govt. COE Special Education Center, Shalimar Town, Lahore", "ownership": "Government", "slug": "govt-coe-special-education-center-shalimar-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-coe-special-education-center-shalimar-town-lahore/"}, {"lat": 31.46247733, "lon": 74.29163977, "name": "Govt. Degree College of Special Education, Lahore.", "ownership": "Government", "slug": "govt-degree-college-of-special-education-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-degree-college-of-special-education-lahore/"}, {"lat": 31.52149376, "lon": 74.35531545, "name": "Govt. High School of Special Education for H.I (Boys), Lahore.", "ownership": "Government", "slug": "govt-high-school-of-special-education-for-hi-boys-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-school-of-special-education-for-hi-boys-lahore/"}, {"lat": 31.5540036, "lon": 74.3046676, "name": "Govt. High School of Special Education for H.I (Girls), Lahore.", "ownership": "Government", "slug": "govt-high-school-of-special-education-for-hi-girls-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-school-of-special-education-for-hi-girls-lahore/"}, {"lat": 31.55180329, "lon": 74.30404586, "name": "Govt. School for PDC, Lahore.", "ownership": "Government", "slug": "govt-school-for-pdc-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-school-for-pdc-lahore/"}, {"lat": 31.58604067, "lon": 74.32266642, "name": "Govt. High School of Special Education for VIC, Sheranwala Gate, Lahore.", "ownership": "Government", "slug": "govt-high-school-of-special-education-for-vic-sheranwala-gate-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-school-of-special-education-for-vic-sheranwala-gate-lahore/"}, {"lat": 31.5244107, "lon": 74.29898747, "name": "Govt. High Shadab Training Institute for MCC, Lahore.", "ownership": "Government", "slug": "govt-high-shadab-training-institute-for-mcc-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-shadab-training-institute-for-mcc-lahore/"}, {"lat": 31.54256312, "lon": 74.29623235, "name": "Govt. Institute for Slow Learners, Lahore.", "ownership": "Government", "slug": "govt-institute-for-slow-learners-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-institute-for-slow-learners-lahore/"}, {"lat": 31.56698207, "lon": 74.43081934, "name": "Govt. Middle Special Education Centre, Aziz Bhatti, Lahore.", "ownership": "Government", "slug": "govt-middle-special-education-centre-aziz-bhatti-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-middle-special-education-centre-aziz-bhatti-lahore/"}, {"lat": 31.58560231, "lon": 74.31514525, "name": "Govt. Middle Special Education Centre, Ravi Town, Lahore.", "ownership": "Government", "slug": "govt-middle-special-education-centre-ravi-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-middle-special-education-centre-ravi-town-lahore/"}, {"lat": 31.52432974, "lon": 74.2984106, "name": "Govt. Secondary Institute for the Blind Girls, Lahore.", "ownership": "Government", "slug": "govt-secondary-institute-for-the-blind-girls-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-secondary-institute-for-the-blind-girls-lahore/"}, {"lat": 31.45985912, "lon": 74.29623634, "name": "Govt. Special Education Centre, Nishtar Town, Lahore.", "ownership": "Government", "slug": "govt-special-education-centre-nishtar-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-nishtar-town-lahore/"}, {"lat": 31.29506441, "lon": 74.21878007, "name": "Govt. Special Education Centre, Raiwind.", "ownership": "Government", "slug": "govt-special-education-centre-raiwind", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-raiwind/"}, {"lat": 31.44698762, "lon": 74.20484233, "name": "Govt. Special Education Centre, Thokar Niaz Baig.", "ownership": "Government", "slug": "govt-special-education-centre-thokar-niaz-baig", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-thokar-niaz-baig/"}, {"lat": 31.55030777, "lon": 74.37038487, "name": "Govt. Special Education Centre, Wahga Town, Lahore.", "ownership": "Government", "slug": "govt-special-education-centre-wahga-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-wahga-town-lahore/"}, {"lat": 31.59115105, "lon": 74.30445591, "name": "Govt. Sunrise Institute for the Blind, Ravi Road, Lahore.", "ownership": "Government", "slug": "govt-sunrise-institute-for-the-blind-ravi-road-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-sunrise-institute-for-the-blind-ravi-road-lahore/"}, {"lat": 31.46964877, "lon": 74.25260297, "name": "Hamza Foundation Academy For The Deaf, Lahore", "ownership": "Nonprofit", "slug": "hamza-foundation-academy-for-the-deaf-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/hamza-foundation-academy-for-the-deaf-lahore/"}, {"lat": 31.44295566, "lon": 74.26013034, "name": "Hamza Special Children School", "ownership": "Private", "slug": "hamza-special-children-school", "type": "Therapy", "type_key": "therapy", "url": "/facility/hamza-special-children-school/"}, {"lat": 31.43094562, "lon": 74.26152793, "name": "Happy Mind - Inclusive Clinic and Daycare for kids", "ownership": "Private", "slug": "happy-mind---inclusive-clinic-and-daycare-for-kids", "type": "Therapy", "type_key": "therapy", "url": "/facility/happy-mind---inclusive-clinic-and-daycare-for-kids/"}, {"lat": 31.52062573, "lon": 74.35640813, "name": "Headway Institute of Learning Lahore", "ownership": "Nonprofit", "slug": "headway-institute-of-learning-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/headway-institute-of-learning-lahore/"}, {"lat": 31.47169235, "lon": 74.31375156, "name": "Help Autism Pakistan Lahore", "ownership": "Nonprofit", "slug": "help-autism-pakistan-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/help-autism-pakistan-lahore/"}, {"lat": 31.47954489, "lon": 74.28300208, "name": "House of Juniors Lahore", "ownership": "Private", "slug": "house-of-juniors-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/house-of-juniors-lahore/"}, {"lat": 31.45755912, "lon": 74.44537884, "name": "Lahore Autism Center", "ownership": "Private", "slug": "lahore-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/lahore-autism-center/"}, {"lat": 31.52390037, "lon": 74.37973477, "name": "Lahore Garrison Institute for Special Education (LGISE)", "ownership": "Private", "slug": "lahore-garrison-institute-for-special-education-lgise", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/lahore-garrison-institute-for-special-education-lgise/"}, {"lat": 31.4449501, "lon": 74.30530187, "name": "Lahore Residency \u0026 Rehabilitation Centre", "ownership": "Private", "slug": "lahore-residency-rehabilitation-centre", "type": "Therapy", "type_key": "therapy", "url": "/facility/lahore-residency-rehabilitation-centre/"}, {"lat": 31.44825737, "lon": 74.39530457, "name": "Leaps and Bounds, Lahore", "ownership": "Private", "slug": "leaps-and-bounds-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/leaps-and-bounds-lahore/"}, {"lat": 31.44218827, "lon": 74.27567033, "name": "Love \u0026 Care Autism Center", "ownership": "Private", "slug": "love-care-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/love-care-autism-center/"}, {"lat": 31.44036741, "lon": 74.30679906, "name": "Maryam Nawaz School and Resource Centre for Autism", "ownership": "Government", "slug": "maryam-nawaz-school-and-resource-centre-for-autism", "type": "Therapy", "type_key": "therapy", "url": "/facility/maryam-nawaz-school-and-resource-centre-for-autism/"}, {"lat": 31.46335977, "lon": 74.29226391, "name": "National Special Education Centre, Johar Town, Lahore. (Dev)", "ownership": "Government", "slug": "national-special-education-centre-johar-town-lahore-dev", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/national-special-education-centre-johar-town-lahore-dev/"}, {"lat": 31.3775321, "lon": 74.17270107, "name": "Nexus School for Special Children", "ownership": "Private", "slug": "nexus-school-for-special-children", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/nexus-school-for-special-children/"}, {"lat": 31.33399433, "lon": 74.19632159, "name": "Oasis School for Autism", "ownership": "Nonprofit", "slug": "oasis-school-for-autism", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/oasis-school-for-autism/"}, {"lat": 31.56550553, "lon": 74.37231639, "name": "Rising Sun Institute for Special Children", "ownership": "Nonprofit", "slug": "rising-sun-institute-for-special-children", "type": "Therapy", "type_key": "therapy", "url": "/facility/rising-sun-institute-for-special-children/"}, {"lat": 31.48442079, "lon": 74.36403664, "name": "Rising Sun Institute for Special Children (Autism Selection)", "ownership": "Nonprofit", "slug": "rising-sun-institute-for-special-children-autism-selection", "type": "Therapy", "type_key": "therapy", "url": "/facility/rising-sun-institute-for-special-children-autism-selection/"}, {"lat": 31.46815343, "lon": 74.36441331, "name": "Rising Sun Institute for Special Children", "ownership": "Nonprofit", "slug": "rising-sun-institute-for-special-children-2", "type": "Therapy", "type_key": "therapy", "url": "/facility/rising-sun-institute-for-special-children-2/"}, {"lat": 31.340987, "lon": 74.13884734, "name": "Roots \u0026 Wings Autism Center", "ownership": "Private", "slug": "roots-wings-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/roots-wings-autism-center/"}, {"lat": 31.47470038, "lon": 74.30503294, "name": "SLI-Sen Learning Institute", "ownership": "Private", "slug": "sli-sen-learning-institute", "type": "Therapy", "type_key": "therapy", "url": "/facility/sli-sen-learning-institute/"}, {"lat": 31.47202322, "lon": 74.31702517, "name": "Speech Lingua Spot, Lahore", "ownership": "Private", "slug": "speech-lingua-spot-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/speech-lingua-spot-lahore/"}, {"lat": 31.5181137, "lon": 74.28588886, "name": "Speech Production Lab", "ownership": "Private", "slug": "speech-production-lab", "type": "Therapy", "type_key": "therapy", "url": "/facility/speech-production-lab/"}, {"lat": 31.43469484, "lon": 74.25607903, "name": "STEP UP Autism Center", "ownership": "Private", "slug": "step-up-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/step-up-autism-center/"}, {"lat": 31.49990581, "lon": 74.3176227, "name": "Terteeb, Lahore", "ownership": "Private", "slug": "terteeb-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/terteeb-lahore/"}, {"lat": 31.52136971, "lon": 74.35505545, "name": "Vocational Training Centre for Disabled Person, Lahore. (Dev)", "ownership": "Government", "slug": "vocational-training-centre-for-disabled-person-lahore-dev", "type": "Vocational Training", "type_key": "vocational-training", "url": "/facility/vocational-training-centre-for-disabled-person-lahore-dev/"}, {"lat": 31.45977913, "lon": 74.28804287, "name": "Special Education and Training Center", "ownership": "Nonprofit", "slug": "special-education-and-training-center", "type": "Vocational Training", "type_key": "vocational-training", "url": "/facility/special-education-and-training-center/"}, {"lat": 31.455849, "lon": 74.37664744, "name": "Fakuoka School for Special Children", "ownership": "Nonprofit", "slug": "fakuoka-school-for-special-children", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/fakuoka-school-for-special-children/"}, {"lat": 31.52871306, "lon": 74.32252853, "name": "Pakistan Society for the Differently Abled High School", "ownership": "Nonprofit", "slug": "pakistan-society-for-the-differently-abled-high-school", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/pakistan-society-for-the-differently-abled-high-school/"}, {"lat": 31.35468748, "lon": 74.3268127, "name": "Aziz Jahan Begum Trust Institute for Blind, Lahore", "ownership": "Nonprofit", "slug": "aziz-jahan-begum-trust-institute-for-blind-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/aziz-jahan-begum-trust-institute-for-blind-lahore/"}, {"lat": 31.5540036, "lon": 74.3046676, "name": "Government Readymade Garments, Lahore", "ownership": "Government", "slug": "government-readymade-garments-lahore", "type": "Vocational Training", "type_key": "vocational-training", "url": "/facility/government-readymade-garments-lahore/"}, {"lat": 31.51091326, "lon": 74.37175167, "name": "COMPASS, Lahore", "ownership": "Private", "slug": "compass-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/compass-lahore/"}, {"lat": 31.54492621, "lon": 74.32949706, "name": "The Caritas Pakistan", "ownership": "Nonprofit", "slug": "the-caritas-pakistan", "type": "Therapy", "type_key": "therapy", "url": "/facility/the-caritas-pakistan/"}]</script>
+<div class="map-meta">
+  <p class="map-caption">
+    <svg class="icon" aria-hidden="true"><use href="#icon-map"/></svg>
+    Every facility with a mappable location — tap a pin for details.
+  </p>
+  <ul class="map-legend" aria-label="Map key">
+    
+    <li class="type-special-education-school"><span class="dot" aria-hidden="true"></span>Special Education School</li>
+    
+    <li class="type-therapy"><span class="dot" aria-hidden="true"></span>Therapy</li>
+    
+    <li class="type-vocational-training"><span class="dot" aria-hidden="true"></span>Vocational Training</li>
+    
+  </ul>
+</div>
+
+
+    <div class="stat-strip stat-strip-light">
+      <div class="stat">
+        <strong>34</strong>
+        distinct neighborhoods
+      </div>
+      <div class="stat">
+        <strong>23</strong>
+        of those have only 1 listed facility
+      </div>
+      <div class="stat">
+        <strong>8.8 km</strong>
+        average distance from central Lahore
+      </div>
+      <div class="stat">
+        <strong>27%</strong>
+        of facilities sit over 10 km out
+      </div>
+    </div>
+
+    <p class="note">Neighborhood names are parsed from each facility's address and are approximate. The map above shows exact positions.</p>
+
+    <h3>Where facilities are concentrated</h3>
+    <div class="bar-list">
+      
+      <div class="bar-row">
+        <div class="bar-label">Other Lahore</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 100.0%;"></div></div>
+        <div class="bar-value">11</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Johar Town</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 81.8%;"></div></div>
+        <div class="bar-value">9</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Gulberg</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 45.5%;"></div></div>
+        <div class="bar-value">5</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Wapda Town</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 36.4%;"></div></div>
+        <div class="bar-value">4</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Township</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 27.3%;"></div></div>
+        <div class="bar-value">3</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Allama Iqbal Town</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 27.3%;"></div></div>
+        <div class="bar-value">3</div>
+      </div>
+      
+    </div>
+
+    <div class="callout">
+      <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
+      <p>
+        We can see that coverage is uneven: Other Lahore alone accounts for 11 of the 68 facilities, while
+        23 other neighborhoods — including Aitchison Society, Architects Engineers Housing Society, Aziz Bhatti Town, Bahria Town, Bankers Cooperative Housing Society, DHA, and more —
+        have just one. On average a facility is 1.3 km from its nearest neighbor, but
+        8 have no other listed facility within 3 km — the most isolated being
+        Aziz Jahan Begum Trust Institute for Blind, Lahore; Nexus School for Special Children; Roots &amp; Wings Autism Center; Lahore Autism Center. The listing farthest from the city center,
+        Roots &amp; Wings Autism Center, is about 28.9 km out.
+        Distances are straight-line and measured from an approximate central point in Gulberg, so real travel times will be longer.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================== COST ============================== -->
+  <div class="insight-section">
+    <div class="section-header">
+      <h2>Cost</h2>
+      <p>Are facilities free, subsidized or paid?</p>
+    </div>
+
+    <div class="bar-list">
+      
+      <div class="bar-row">
+        <div class="bar-label">Free</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 36.8%;"></div></div>
+        <div class="bar-value">25 (37%)</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Subsidized</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 20.6%;"></div></div>
+        <div class="bar-value">14 (21%)</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Paid</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 8.8%;"></div></div>
+        <div class="bar-value">6 (9%)</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Not Published</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 33.8%;"></div></div>
+        <div class="bar-value">23 (34%)</div>
+      </div>
+      
+    </div>
+
+    <div class="callout">
+      <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
+      <p>
+        37% of facilities report no fee at all, but 23 facilities
+        (34%) don't publish a price anywhere, so families has to call before knowing whether a place is
+        affordable.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================== SERVICES ============================== -->
+  <div class="insight-section">
+    <div class="section-header">
+      <h2>Services</h2>
+      <p>42 distinct services appear across the directory</p>
+    </div>
+
+    <h3>Most common</h3>
+    <div class="bar-list">
+      
+      <div class="bar-row">
+        <div class="bar-label">Speech &amp; Language Therapy</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 100.0%;"></div></div>
+        <div class="bar-value">41</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Vocational &amp; Trade Skills Training</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 87.8%;"></div></div>
+        <div class="bar-value">36</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Physiotherapy</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 73.2%;"></div></div>
+        <div class="bar-value">30</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Sports &amp; Recreational Activities</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 73.2%;"></div></div>
+        <div class="bar-value">30</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Academic / Special Education Program</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 70.7%;"></div></div>
+        <div class="bar-value">29</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Computer / IT Skills Training</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 65.9%;"></div></div>
+        <div class="bar-value">27</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Occupational Therapy (OT)</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 63.4%;"></div></div>
+        <div class="bar-value">26</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Counselling &amp; Psychological Support</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 46.3%;"></div></div>
+        <div class="bar-value">19</div>
+      </div>
+      
+    </div>
+
+    <h3>Least common</h3>
+    <ul class="chip-list">
+      
+      <li>Anger Management (1)</li>
+      
+      <li>Audiology Screening &amp; Diagnostics (1)</li>
+      
+      <li>B.Ed / M.Ed Degree Programs (Special Education) (1)</li>
+      
+      <li>Daycare (1)</li>
+      
+      <li>Fine Motor Skills Training (1)</li>
+      
+      <li>Home-Based / At-Home Services (1)</li>
+      
+      <li>Job Placement Support (1)</li>
+      
+      <li>Nutrition &amp; Diet Counselling (1)</li>
+      
+      <li>On-Site Pharmacy &amp; Nursery (1)</li>
+      
+      <li>Online Consultation (1)</li>
+      
+      <li>Psychiatric Consultation (1)</li>
+      
+      <li>Rest / Extended Care Facilities (1)</li>
+      
+      <li>Social Skills / Integration Therapy (1)</li>
+      
+      <li>Transition / Life-Readiness Program (1)</li>
+      
+      <li>Auditory Verbal Therapy (AVT) (2)</li>
+      
+      <li>Autism-Specific Therapy Program (ASD) (2)</li>
+      
+      <li>Medical Services (OPD/IPD) (2)</li>
+      
+      <li>Pakistan Sign Language (PSL) Training &amp; Support (2)</li>
+      
+      <li>Play-Based / Montessori Learning (2)</li>
+      
+      <li>Summer Program (2)</li>
+      
+    </ul>
+  </div>
+
+  <!-- ============================== DISABILITY ============================== -->
+  <div class="insight-section">
+    <div class="section-header">
+      <h2>Disability populations</h2>
+      <p>13 disability categories are named across the directory</p>
+    </div>
+
+    <h3>Best served</h3>
+    <div class="bar-list">
+      
+      <div class="bar-row">
+        <div class="bar-label">Autism Spectrum Disorder (ASD)</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 100.0%;"></div></div>
+        <div class="bar-value">30</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Intellectually/Mentally Challenged (IC/MC)</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 100.0%;"></div></div>
+        <div class="bar-value">30</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Hearing Impairment (HI)</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 76.7%;"></div></div>
+        <div class="bar-value">23</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Visual Impairment (VI)</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 66.7%;"></div></div>
+        <div class="bar-value">20</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Physically Disabled (PD)</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 63.3%;"></div></div>
+        <div class="bar-value">19</div>
+      </div>
+      
+    </div>
+
+    <h3>Least served</h3>
+    <div class="bar-list">
+      
+      <div class="bar-row">
+        <div class="bar-label">Behavioural Disorders</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: 3.3%;"></div></div>
+        <div class="bar-value">1</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">ADHD</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: 6.7%;"></div></div>
+        <div class="bar-value">2</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Cerebral Palsy (CP)</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: 33.3%;"></div></div>
+        <div class="bar-value">10</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Down Syndrome</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: 46.7%;"></div></div>
+        <div class="bar-value">14</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Developmental Disorders</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: 50.0%;"></div></div>
+        <div class="bar-value">15</div>
+      </div>
+      
+      <div class="bar-row">
+        <div class="bar-label">Learning Challenges / Slow Learners (SL)</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: 50.0%;"></div></div>
+        <div class="bar-value">15</div>
+      </div>
+      
+    </div>
+
+    <div class="callout">
+      <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
+      <p>
+        Autism Spectrum Disorder (ASD) is named by 30 of 68 facilities, and the top
+        5 categories each have 19 or more. At the other end,
+        categories such as Behavioural Disorders, ADHD, Cerebral Palsy (CP), Down Syndrome, Developmental Disorders, Learning Challenges / Slow Learners (SL) are each named by at most
+        15 facilities in the directory which is a
+        a real gap for those families, though a few facilities list general labels like "All Disabilities (Inclusive)" and may accept these children too.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>Disability Inclusive &amp; Learning Lahore, or DIL Lahore, is an independent, non-ranked directory of special-education and disability services in Lahore, compiled from public listings and facility records. Details can change, so confirm fees, hours, and admissions with a facility before visiting.</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/browse/">Browse</a>
+      <a href="/insights/">Insights</a>
+    </nav>
+  </div>
+</footer>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="/static/js/map.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // Access the raw points dumped from Jinja
+      const rawPoints = [{"lat": 31.41985829, "lon": 74.25994183, "name": "ABLE, Autism Behaviour Learning and Education, Lahore", "ownership": "Private", "slug": "able-autism-behaviour-learning-and-education-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/able-autism-behaviour-learning-and-education-lahore/"}, {"lat": 31.50089602, "lon": 74.35294863, "name": "Amin Maktab", "ownership": "Nonprofit", "slug": "amin-maktab", "type": "Therapy", "type_key": "therapy", "url": "/facility/amin-maktab/"}, {"lat": 31.5011212, "lon": 74.36470673, "name": "Autism Care Center", "ownership": "Private", "slug": "autism-care-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/autism-care-center/"}, {"lat": 31.49247365, "lon": 74.37590161, "name": "Autism Point", "ownership": "Nonprofit", "slug": "autism-point", "type": "Therapy", "type_key": "therapy", "url": "/facility/autism-point/"}, {"lat": 31.40003371, "lon": 74.28461626, "name": "Autism Resource Centre", "ownership": "Nonprofit", "slug": "autism-resource-centre", "type": "Therapy", "type_key": "therapy", "url": "/facility/autism-resource-centre/"}, {"lat": 31.49466421, "lon": 74.30089476, "name": "Child Welfare Center", "ownership": "Government", "slug": "child-welfare-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/child-welfare-center/"}, {"lat": 31.45916607, "lon": 74.25321557, "name": "CLC-Cradle to Crayons Learning Centre", "ownership": "Private", "slug": "clc-cradle-to-crayons-learning-centre", "type": "Therapy", "type_key": "therapy", "url": "/facility/clc-cradle-to-crayons-learning-centre/"}, {"lat": 31.55048834, "lon": 74.3208485, "name": "Dar-ul-Mussarat Lahore", "ownership": "Nonprofit", "slug": "dar-ul-mussarat-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/dar-ul-mussarat-lahore/"}, {"lat": 31.44067426, "lon": 74.3097626, "name": "Deaf Reach, Lahore", "ownership": "Nonprofit", "slug": "deaf-reach-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/deaf-reach-lahore/"}, {"lat": 31.46454522, "lon": 74.29155916, "name": "Dimensions: Institute For Autism, Special Education, Physical Rehabilitation \u0026 Psychological Services", "ownership": "Private", "slug": "dimensions-institute-for-autism-special-education-physical-rehabilitation-psychological-services", "type": "Therapy", "type_key": "therapy", "url": "/facility/dimensions-institute-for-autism-special-education-physical-rehabilitation-psychological-services/"}, {"lat": 31.47585993, "lon": 74.28047878, "name": "Global Institute for Autism, Lahore", "ownership": "Private", "slug": "global-institute-for-autism-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/global-institute-for-autism-lahore/"}, {"lat": 31.463012, "lon": 74.292616, "name": "Government National Special Education Centre, Johar Town-Lahore", "ownership": "Government", "slug": "government-national-special-education-centre-johar-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/government-national-special-education-centre-johar-town-lahore/"}, {"lat": 31.5669802, "lon": 74.430822, "name": "Government Special Education Centre, Wagha Town-Lahore", "ownership": "Government", "slug": "government-special-education-centre-wagha-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/government-special-education-centre-wagha-town-lahore/"}, {"lat": 31.52149079, "lon": 74.35530471, "name": "Govt. Central High School of Special Education for HIC, Gulberg-II Lahore.", "ownership": "Government", "slug": "govt-central-high-school-of-special-education-for-hic-gulberg-ii-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-central-high-school-of-special-education-for-hic-gulberg-ii-lahore/"}, {"lat": 31.56698895, "lon": 74.43081657, "name": "Govt. COE Special Education Center, Shalimar Town, Lahore", "ownership": "Government", "slug": "govt-coe-special-education-center-shalimar-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-coe-special-education-center-shalimar-town-lahore/"}, {"lat": 31.46247733, "lon": 74.29163977, "name": "Govt. Degree College of Special Education, Lahore.", "ownership": "Government", "slug": "govt-degree-college-of-special-education-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-degree-college-of-special-education-lahore/"}, {"lat": 31.52149376, "lon": 74.35531545, "name": "Govt. High School of Special Education for H.I (Boys), Lahore.", "ownership": "Government", "slug": "govt-high-school-of-special-education-for-hi-boys-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-school-of-special-education-for-hi-boys-lahore/"}, {"lat": 31.5540036, "lon": 74.3046676, "name": "Govt. High School of Special Education for H.I (Girls), Lahore.", "ownership": "Government", "slug": "govt-high-school-of-special-education-for-hi-girls-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-school-of-special-education-for-hi-girls-lahore/"}, {"lat": 31.55180329, "lon": 74.30404586, "name": "Govt. School for PDC, Lahore.", "ownership": "Government", "slug": "govt-school-for-pdc-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-school-for-pdc-lahore/"}, {"lat": 31.58604067, "lon": 74.32266642, "name": "Govt. High School of Special Education for VIC, Sheranwala Gate, Lahore.", "ownership": "Government", "slug": "govt-high-school-of-special-education-for-vic-sheranwala-gate-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-school-of-special-education-for-vic-sheranwala-gate-lahore/"}, {"lat": 31.5244107, "lon": 74.29898747, "name": "Govt. High Shadab Training Institute for MCC, Lahore.", "ownership": "Government", "slug": "govt-high-shadab-training-institute-for-mcc-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-high-shadab-training-institute-for-mcc-lahore/"}, {"lat": 31.54256312, "lon": 74.29623235, "name": "Govt. Institute for Slow Learners, Lahore.", "ownership": "Government", "slug": "govt-institute-for-slow-learners-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-institute-for-slow-learners-lahore/"}, {"lat": 31.56698207, "lon": 74.43081934, "name": "Govt. Middle Special Education Centre, Aziz Bhatti, Lahore.", "ownership": "Government", "slug": "govt-middle-special-education-centre-aziz-bhatti-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-middle-special-education-centre-aziz-bhatti-lahore/"}, {"lat": 31.58560231, "lon": 74.31514525, "name": "Govt. Middle Special Education Centre, Ravi Town, Lahore.", "ownership": "Government", "slug": "govt-middle-special-education-centre-ravi-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-middle-special-education-centre-ravi-town-lahore/"}, {"lat": 31.52432974, "lon": 74.2984106, "name": "Govt. Secondary Institute for the Blind Girls, Lahore.", "ownership": "Government", "slug": "govt-secondary-institute-for-the-blind-girls-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-secondary-institute-for-the-blind-girls-lahore/"}, {"lat": 31.45985912, "lon": 74.29623634, "name": "Govt. Special Education Centre, Nishtar Town, Lahore.", "ownership": "Government", "slug": "govt-special-education-centre-nishtar-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-nishtar-town-lahore/"}, {"lat": 31.29506441, "lon": 74.21878007, "name": "Govt. Special Education Centre, Raiwind.", "ownership": "Government", "slug": "govt-special-education-centre-raiwind", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-raiwind/"}, {"lat": 31.44698762, "lon": 74.20484233, "name": "Govt. Special Education Centre, Thokar Niaz Baig.", "ownership": "Government", "slug": "govt-special-education-centre-thokar-niaz-baig", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-thokar-niaz-baig/"}, {"lat": 31.55030777, "lon": 74.37038487, "name": "Govt. Special Education Centre, Wahga Town, Lahore.", "ownership": "Government", "slug": "govt-special-education-centre-wahga-town-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-special-education-centre-wahga-town-lahore/"}, {"lat": 31.59115105, "lon": 74.30445591, "name": "Govt. Sunrise Institute for the Blind, Ravi Road, Lahore.", "ownership": "Government", "slug": "govt-sunrise-institute-for-the-blind-ravi-road-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/govt-sunrise-institute-for-the-blind-ravi-road-lahore/"}, {"lat": 31.46964877, "lon": 74.25260297, "name": "Hamza Foundation Academy For The Deaf, Lahore", "ownership": "Nonprofit", "slug": "hamza-foundation-academy-for-the-deaf-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/hamza-foundation-academy-for-the-deaf-lahore/"}, {"lat": 31.44295566, "lon": 74.26013034, "name": "Hamza Special Children School", "ownership": "Private", "slug": "hamza-special-children-school", "type": "Therapy", "type_key": "therapy", "url": "/facility/hamza-special-children-school/"}, {"lat": 31.43094562, "lon": 74.26152793, "name": "Happy Mind - Inclusive Clinic and Daycare for kids", "ownership": "Private", "slug": "happy-mind---inclusive-clinic-and-daycare-for-kids", "type": "Therapy", "type_key": "therapy", "url": "/facility/happy-mind---inclusive-clinic-and-daycare-for-kids/"}, {"lat": 31.52062573, "lon": 74.35640813, "name": "Headway Institute of Learning Lahore", "ownership": "Nonprofit", "slug": "headway-institute-of-learning-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/headway-institute-of-learning-lahore/"}, {"lat": 31.47169235, "lon": 74.31375156, "name": "Help Autism Pakistan Lahore", "ownership": "Nonprofit", "slug": "help-autism-pakistan-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/help-autism-pakistan-lahore/"}, {"lat": 31.47954489, "lon": 74.28300208, "name": "House of Juniors Lahore", "ownership": "Private", "slug": "house-of-juniors-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/house-of-juniors-lahore/"}, {"lat": 31.45755912, "lon": 74.44537884, "name": "Lahore Autism Center", "ownership": "Private", "slug": "lahore-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/lahore-autism-center/"}, {"lat": 31.52390037, "lon": 74.37973477, "name": "Lahore Garrison Institute for Special Education (LGISE)", "ownership": "Private", "slug": "lahore-garrison-institute-for-special-education-lgise", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/lahore-garrison-institute-for-special-education-lgise/"}, {"lat": 31.4449501, "lon": 74.30530187, "name": "Lahore Residency \u0026 Rehabilitation Centre", "ownership": "Private", "slug": "lahore-residency-rehabilitation-centre", "type": "Therapy", "type_key": "therapy", "url": "/facility/lahore-residency-rehabilitation-centre/"}, {"lat": 31.44825737, "lon": 74.39530457, "name": "Leaps and Bounds, Lahore", "ownership": "Private", "slug": "leaps-and-bounds-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/leaps-and-bounds-lahore/"}, {"lat": 31.44218827, "lon": 74.27567033, "name": "Love \u0026 Care Autism Center", "ownership": "Private", "slug": "love-care-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/love-care-autism-center/"}, {"lat": 31.44036741, "lon": 74.30679906, "name": "Maryam Nawaz School and Resource Centre for Autism", "ownership": "Government", "slug": "maryam-nawaz-school-and-resource-centre-for-autism", "type": "Therapy", "type_key": "therapy", "url": "/facility/maryam-nawaz-school-and-resource-centre-for-autism/"}, {"lat": 31.46335977, "lon": 74.29226391, "name": "National Special Education Centre, Johar Town, Lahore. (Dev)", "ownership": "Government", "slug": "national-special-education-centre-johar-town-lahore-dev", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/national-special-education-centre-johar-town-lahore-dev/"}, {"lat": 31.3775321, "lon": 74.17270107, "name": "Nexus School for Special Children", "ownership": "Private", "slug": "nexus-school-for-special-children", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/nexus-school-for-special-children/"}, {"lat": 31.33399433, "lon": 74.19632159, "name": "Oasis School for Autism", "ownership": "Nonprofit", "slug": "oasis-school-for-autism", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/oasis-school-for-autism/"}, {"lat": 31.56550553, "lon": 74.37231639, "name": "Rising Sun Institute for Special Children", "ownership": "Nonprofit", "slug": "rising-sun-institute-for-special-children", "type": "Therapy", "type_key": "therapy", "url": "/facility/rising-sun-institute-for-special-children/"}, {"lat": 31.48442079, "lon": 74.36403664, "name": "Rising Sun Institute for Special Children (Autism Selection)", "ownership": "Nonprofit", "slug": "rising-sun-institute-for-special-children-autism-selection", "type": "Therapy", "type_key": "therapy", "url": "/facility/rising-sun-institute-for-special-children-autism-selection/"}, {"lat": 31.46815343, "lon": 74.36441331, "name": "Rising Sun Institute for Special Children", "ownership": "Nonprofit", "slug": "rising-sun-institute-for-special-children-2", "type": "Therapy", "type_key": "therapy", "url": "/facility/rising-sun-institute-for-special-children-2/"}, {"lat": 31.340987, "lon": 74.13884734, "name": "Roots \u0026 Wings Autism Center", "ownership": "Private", "slug": "roots-wings-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/roots-wings-autism-center/"}, {"lat": 31.47470038, "lon": 74.30503294, "name": "SLI-Sen Learning Institute", "ownership": "Private", "slug": "sli-sen-learning-institute", "type": "Therapy", "type_key": "therapy", "url": "/facility/sli-sen-learning-institute/"}, {"lat": 31.47202322, "lon": 74.31702517, "name": "Speech Lingua Spot, Lahore", "ownership": "Private", "slug": "speech-lingua-spot-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/speech-lingua-spot-lahore/"}, {"lat": 31.5181137, "lon": 74.28588886, "name": "Speech Production Lab", "ownership": "Private", "slug": "speech-production-lab", "type": "Therapy", "type_key": "therapy", "url": "/facility/speech-production-lab/"}, {"lat": 31.43469484, "lon": 74.25607903, "name": "STEP UP Autism Center", "ownership": "Private", "slug": "step-up-autism-center", "type": "Therapy", "type_key": "therapy", "url": "/facility/step-up-autism-center/"}, {"lat": 31.49990581, "lon": 74.3176227, "name": "Terteeb, Lahore", "ownership": "Private", "slug": "terteeb-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/terteeb-lahore/"}, {"lat": 31.52136971, "lon": 74.35505545, "name": "Vocational Training Centre for Disabled Person, Lahore. (Dev)", "ownership": "Government", "slug": "vocational-training-centre-for-disabled-person-lahore-dev", "type": "Vocational Training", "type_key": "vocational-training", "url": "/facility/vocational-training-centre-for-disabled-person-lahore-dev/"}, {"lat": 31.45977913, "lon": 74.28804287, "name": "Special Education and Training Center", "ownership": "Nonprofit", "slug": "special-education-and-training-center", "type": "Vocational Training", "type_key": "vocational-training", "url": "/facility/special-education-and-training-center/"}, {"lat": 31.455849, "lon": 74.37664744, "name": "Fakuoka School for Special Children", "ownership": "Nonprofit", "slug": "fakuoka-school-for-special-children", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/fakuoka-school-for-special-children/"}, {"lat": 31.52871306, "lon": 74.32252853, "name": "Pakistan Society for the Differently Abled High School", "ownership": "Nonprofit", "slug": "pakistan-society-for-the-differently-abled-high-school", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/pakistan-society-for-the-differently-abled-high-school/"}, {"lat": 31.35468748, "lon": 74.3268127, "name": "Aziz Jahan Begum Trust Institute for Blind, Lahore", "ownership": "Nonprofit", "slug": "aziz-jahan-begum-trust-institute-for-blind-lahore", "type": "Special Education School", "type_key": "special-education-school", "url": "/facility/aziz-jahan-begum-trust-institute-for-blind-lahore/"}, {"lat": 31.5540036, "lon": 74.3046676, "name": "Government Readymade Garments, Lahore", "ownership": "Government", "slug": "government-readymade-garments-lahore", "type": "Vocational Training", "type_key": "vocational-training", "url": "/facility/government-readymade-garments-lahore/"}, {"lat": 31.51091326, "lon": 74.37175167, "name": "COMPASS, Lahore", "ownership": "Private", "slug": "compass-lahore", "type": "Therapy", "type_key": "therapy", "url": "/facility/compass-lahore/"}, {"lat": 31.54492621, "lon": 74.32949706, "name": "The Caritas Pakistan", "ownership": "Nonprofit", "slug": "the-caritas-pakistan", "type": "Therapy", "type_key": "therapy", "url": "/facility/the-caritas-pakistan/"}];
+      
+      // Map to [lat, lon, intensity] format required by leaflet.heat
+      const heatData = rawPoints.map(p => [p.lat, p.lon, 1]); 
+
+      // Create gradient layer: Blue (Low) -> Lime (Medium) -> Red (High)
+      const heatLayer = L.heatLayer(heatData, {
+          radius: 35,
+          blur: 20,
+          maxZoom: 13,
+          gradient: { 0.3: 'blue', 0.6: 'lime', 1.0: 'red' }
+      });
+      
+      // Assuming 'map' is globally exposed in your map.js file
+      if (typeof map !== 'undefined') {
+          heatLayer.addTo(map);
+      }
+  });
+</script>
+
+</body>
+</html>

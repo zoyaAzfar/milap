@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Find Support — Sehat Haq{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <div class="page-head-panel">
+      <h1>Get your customized matches</h1>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+
+  <div class="qna-form-panel" id="qna-form-panel">
+    <form id="qna-form" action="{{ url_for('qna_finder') }}" method="get">
+      ... (your five .qna-question blocks and the submit button, unchanged) ...
+    </form>
+  </div>
+
+  <div class="qna-results-wrapper" id="qna-results" hidden>
+    <div class="results-header" style="margin-bottom: 24px;">
+      <h2>Your Matches</h2>
+      <a href="{{ url_for('qna_finder') }}" class="back-link" id="qna-restart" style="margin-top: 12px;">
+        <svg class="icon" aria-hidden="true"><use href="#icon-arrow-left"/></svg> Start over
+      </a>
+    </div>
+
+    <div class="qna-results-list" id="qna-list">
+      {% for f in facilities %}
+      <div class="facility-card type-{{ f.type|slug }}" data-slug="{{ f.slug }}" hidden>
+        <div class="card-band">
+          <span>{{ f.type }}</span>
+          <span>{{ f.ownership }}</span>
+        </div>
+        <div class="card-body">
+          <div>
+            <span class="match-score match-excellent" data-tier="excellent" hidden><svg class="icon"><use href="#icon-star"/></svg> Excellent Match</span>
+            <span class="match-score match-good" data-tier="good" hidden>Good Match</span>
+            <span class="match-score match-fair" data-tier="fair" hidden>Partial Match</span>
+          </div>
+          <h3 class="card-heading"><a class="card-title" href="{{ url_for('facility_detail', slug=f.slug) }}">{{ f.name }}</a></h3>
+          <p>{{ f.description }}</p>
+          <ul class="facility-meta card-footer">
+            <li><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg> {{ f.area }}</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#icon-wallet"/></svg> {{ f.cost_label }}</li>
+            {% if f.age_label %}<li><svg class="icon" aria-hidden="true"><use href="#icon-user"/></svg> {{ f.age_label }}</li>{% endif %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="empty-state" id="qna-empty" hidden>
+      <p>We couldn't find any facilities matching those exact details.</p>
+      <a class="btn btn-primary" href="{{ url_for('qna_finder') }}" id="qna-retry">Try adjusting your answers</a>
+    </div>
+  </div>
+
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="application/json" id="filter-data">{{ filter_data|tojson }}</script>
+<script src="{{ url_for('static', filename='js/qna.js') }}"></script>
+{% endblock %}

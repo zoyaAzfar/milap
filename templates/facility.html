@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}{{ f.name }} — Sehat Haq{% endblock %}
+
+{% block content %}
+
+<section class="page-head">
+  <div class="container">
+    <div class="facility-hero-panel type-{{ f.type|slug }}">
+      <a class="back-link" href="{{ url_for('browse') }}">
+        <svg class="icon" aria-hidden="true"><use href="#icon-back"/></svg>
+        Back to browse
+      </a>
+      <h1>{{ f.name }}</h1>
+      <ul class="facility-meta">
+        <li><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>{{ f.area }}</li>
+        {% if f.age_label %}<li><svg class="icon" aria-hidden="true"><use href="#icon-user"/></svg>{{ f.age_label }}</li>{% endif %}
+      </ul>
+      <ul class="tag-row">
+        <li class="tag tag-type">{{ f.type }}</li>
+        <li class="tag">{{ f.ownership }}</li>
+        {% for n in f.needs %}
+        <li class="tag">{{ need_labels[n] }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="facility-body">
+
+    <div class="facility-main">
+      <p class="lead">{{ f.description }}</p>
+
+      {% if f.services %}
+      <div class="detail-card">
+        <h2>Services offered</h2>
+        <ul class="chip-list">
+          {% for s in f.services %}<li>{{ s }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if f.disabilities %}
+      <div class="detail-card">
+        <h2>Disabilities served</h2>
+        <ul class="chip-list">
+          {% for d in f.disabilities %}<li>{{ d }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div class="detail-card">
+        <h2>Fees</h2>
+        <dl>
+          <div class="detail-row">
+            <dt>Cost category</dt>
+            <dd>{{ f.cost_category }}</dd>
+          </div>
+          <div class="detail-row">
+            <dt>Fee details</dt>
+            <dd>{{ f.fee_note }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      {% if f.admission_status or f.age_label or f.levels or f.languages or f.gender %}
+      <div class="detail-card">
+        <h2>Admissions</h2>
+        <dl>
+          {% if f.admission_status %}
+          <div class="detail-row">
+            <dt>Status</dt>
+            <dd>{{ 'Currently open for admissions' if f.admission_status == 'Open' else 'Currently closed for admissions' }}</dd>
+          </div>
+          {% endif %}
+          {% if f.age_label %}
+          <div class="detail-row">
+            <dt>Age group</dt>
+            <dd>{{ f.age_label }}</dd>
+          </div>
+          {% endif %}
+          {% if f.levels %}
+          <div class="detail-row">
+            <dt>Level</dt>
+            <dd>{{ f.levels|join(', ') }}</dd>
+          </div>
+          {% endif %}
+          {% if f.languages %}
+          <div class="detail-row">
+            <dt>Language of instruction</dt>
+            <dd>{{ f.languages|join(', ') }}</dd>
+          </div>
+          {% endif %}
+          {% if f.gender %}
+          <div class="detail-row">
+            <dt>Open to</dt>
+            <dd>{% if f.gender == 'Co-ed' %}All genders{% elif f.gender == 'Boys' %}Boys only{% elif f.gender == 'Girls' %}Girls only{% else %}{{ f.gender }}{% endif %}</dd>
+          </div>
+          {% endif %}
+        </dl>
+      </div>
+      {% endif %}
+
+      {% if f.amenities %}
+      <div class="detail-card">
+        <h2>On-site facilities</h2>
+        <ul class="chip-list">
+          {% for a in f.amenities %}<li>{{ a }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div class="detail-card">
+        <h2>Accessibility &amp; practical info</h2>
+        <dl>
+          <div class="detail-row">
+            <dt>Wheelchair access</dt>
+            <dd>{% if f.wheelchair_accessible == True %}Accessible{% elif f.wheelchair_accessible == False %}Not accessible{% else %}Not reported{% endif %}</dd>
+          </div>
+          <div class="detail-row">
+            <dt>Pakistan Sign Language</dt>
+            <dd>{{ 'Available' if f.psl_available else 'Not reported' }}</dd>
+          </div>
+          <div class="detail-row">
+            <dt>Transport / pickup</dt>
+            <dd>{% if f.transport == True %}Available{% elif f.transport == False %}Not offered{% else %}Not reported{% endif %}</dd>
+          </div>
+          {% if f.live_in %}
+          <div class="detail-row">
+            <dt>Residential care</dt>
+            <dd>Live-in facility available</dd>
+          </div>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+
+    <aside class="sidebar-card" aria-label="Contact and location">
+      <h2>Contact &amp; location</h2>
+
+      <div class="sidebar-contact-row">
+        <svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>
+        <span>{{ f.address }}</span>
+      </div>
+
+      {% if f.phones %}
+      <div class="sidebar-contact-row">
+        <svg class="icon" aria-hidden="true"><use href="#icon-phone"/></svg>
+        <ul class="plain-list">
+          {% for p in f.phones %}
+          <li><a href="tel:{{ p.href }}">{{ p.display }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if f.hours_lines %}
+      <div class="sidebar-contact-row">
+        <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+        <ul class="plain-list">
+          {% for line in f.hours_lines %}<li>{{ line }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if f.website %}
+      <div class="sidebar-contact-row">
+        <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
+        <a href="{{ f.website }}" target="_blank" rel="noopener">Visit website / social media</a>
+      </div>
+      {% endif %}
+
+      <a class="btn btn-primary btn-block" href="{{ maps_url }}" target="_blank" rel="noopener">Get directions</a>
+
+      <ul class="access-badges">
+        <li class="access-badge">
+          <svg class="icon" aria-hidden="true"><use href="#icon-wheelchair"/></svg>
+          {% if f.wheelchair_accessible == True %}Wheelchair accessible{% elif f.wheelchair_accessible == False %}Not wheelchair accessible{% else %}Accessibility not reported{% endif %}
+        </li>
+        <li class="access-badge">
+          <svg class="icon" aria-hidden="true"><use href="#icon-hands"/></svg>
+          {{ 'Sign language available' if f.psl_available else 'No sign language reported' }}
+        </li>
+        {% if f.admission_status %}
+        <li class="access-badge {{ 'badge-closed' if f.admission_status != 'Open' }}">
+          <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
+          {{ 'Open for admissions' if f.admission_status == 'Open' else 'Currently closed' }}
+        </li>
+        {% endif %}
+      </ul>
+
+      {% if f.source %}
+      <p class="sidebar-source">Listing sourced via {{ f.source }}.</p>
+      {% endif %}
+    </aside>
+
+  </div>
+</section>
+
+{% endblock %}

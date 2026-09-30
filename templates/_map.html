@@ -1,0 +1,17 @@
+{# Shared map block used by browse.html and insights.html.
+   Pair it with Leaflet + static/js/map.js in the page's extra_scripts. #}
+{% macro facility_map(label, points, caption, types) %}
+<div class="map-panel" data-facility-map role="region" aria-label="{{ label }}"></div>
+<script type="application/json" id="map-points">{{ points|tojson }}</script>
+<div class="map-meta">
+  <p class="map-caption">
+    <svg class="icon" aria-hidden="true"><use href="#icon-map"/></svg>
+    {{ caption }}
+  </p>
+  <ul class="map-legend" aria-label="Map key">
+    {% for t in types %}
+    <li class="type-{{ t|slug }}"><span class="dot" aria-hidden="true"></span>{{ t }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro %}

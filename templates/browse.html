@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% from "_map.html" import facility_map %}
+
+{% block title %}Browse services — Sehat Haq{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-head">
+  <div class="container">
+    <div class="page-head-panel">
+      <h1>Browse services</h1>
+    </div>
+  </div>
+</section>
+
+<section class="container map-section">
+  {{ facility_map(
+      'Map of facilities matching the current filters',
+      map_points,
+      'Click pin for more details.',
+      options.types) }}
+</section>
+
+<section class="container">
+  <div class="browse-layout">
+
+    <details class="filter-panel" id="filters">
+      <summary>
+        <svg class="icon" aria-hidden="true"><use href="#icon-filter"/></svg>
+        Filters
+        <span class="filter-count" id="filter-count" hidden></span>
+      </summary>
+
+      <form action="{{ url_for('browse') }}" method="get" aria-label="Filter facilities">
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-q">Search</label>
+          <input class="field" type="text" id="filter-q" name="q" placeholder="Name or area…">
+        </div>
+
+        <fieldset class="filter-group">
+          <legend class="filter-label">Need / disability</legend>
+          {% for key, label, icon in options.needs %}
+          <label class="filter-option">
+            <input type="checkbox" name="need" value="{{ key }}">
+            {{ label }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <fieldset class="filter-group">
+          <legend class="filter-label">Type of facility</legend>
+          {% for t in options.types %}
+          <label class="filter-option">
+            <input type="checkbox" name="type" value="{{ t }}">
+            {{ t }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-service">Service required</label>
+          <select class="field" id="filter-service" name="service">
+            <option value="">Any service</option>
+            {% for s in options.services %}
+            <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-area">Area</label>
+          <select class="field" id="filter-area" name="area">
+            <option value="">All areas</option>
+            {% for a in options.areas %}
+            <option value="{{ a }}">{{ a }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-age">Child's age</label>
+          <select class="field" id="filter-age" name="age">
+            <option value="">Any age</option>
+            {% for key, label, lo, hi in options.age_bands %}
+            <option value="{{ key }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-level">Level of school</label>
+          <select class="field" id="filter-level" name="level">
+            <option value="">Any level</option>
+            {% for lvl in options.levels %}
+            <option value="{{ lvl }}">{{ lvl }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <fieldset class="filter-group">
+          <legend class="filter-label">Who runs it</legend>
+          {% for o in options.ownerships %}
+          <label class="filter-option">
+            <input type="checkbox" name="ownership" value="{{ o }}">
+            {{ o }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <fieldset class="filter-group">
+          <legend class="filter-label">Cost</legend>
+          {% for c in options.cost_categories %}
+          <label class="filter-option">
+            <input type="checkbox" name="cost" value="{{ c }}">
+            {{ c }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <fieldset class="filter-group">
+          <legend class="filter-label">Accessibility</legend>
+          <label class="filter-option">
+            <input type="checkbox" name="wheelchair" value="1">
+            Wheelchair accessible
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" name="psl" value="1">
+            Pakistan Sign Language
+          </label>
+        </fieldset>
+
+        <div class="filter-actions">
+          <button class="btn btn-primary" type="submit">Apply filters</button>
+          <a class="btn btn-outline" href="{{ url_for('browse') }}">Clear all</a>
+        </div>
+      </form>
+    </details>
+
+    <div class="results">
+      <p class="results-count" id="results-count"></p>
+
+      <div class="results-grid">
+        {% for f in results %}
+        <article class="facility-card type-{{ f.type|slug }}" data-slug="{{ f.slug }}">
+          <div class="card-band">
+            <span>{{ f.type }}</span>
+            <span>{{ f.ownership }}</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-heading"><a class="card-title" href="{{ url_for('facility_detail', slug=f.slug) }}">{{ f.name }}</a></h2>
+
+            <ul class="facility-meta">
+              <li><svg class="icon" aria-hidden="true"><use href="#icon-pin"/></svg>{{ f.area }}</li>
+              {% if f.age_label %}<li><svg class="icon" aria-hidden="true"><use href="#icon-user"/></svg>{{ f.age_label }}</li>{% endif %}
+              <li>{{ f.cost_label }}</li>
+            </ul>
+
+            <ul class="tag-row">
+              {% for n in f.needs %}
+              <li class="tag">{{ need_labels[n] }}</li>
+              {% endfor %}
+            </ul>
+
+            <p>{{ f.description }}</p>
+
+            <div class="card-footer">
+              <a class="btn btn-primary btn-small" href="{{ url_for('facility_detail', slug=f.slug) }}">
+                View profile<span class="visually-hidden"> for {{ f.name }}</span>
+              </a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+
+      <div class="empty-state" id="empty-state" hidden>
+        <h2>No facilities match those filters yet</h2>
+        <p>Try removing a filter or two, or search for a different name or area.</p>
+        <a class="btn btn-primary" href="{{ url_for('browse') }}" id="clear-empty">Clear all filters</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script type="application/json" id="filter-data">{{ filter_data|tojson }}</script>
+<script type="application/json" id="age-bands">{{ age_bands|tojson }}</script>
+<script src="{{ url_for('static', filename='js/browse.js') }}"></script>
+<script>
+// On wide screens the filters are always open; on phones they collapse
+// behind a "Filters" button so results aren't pushed far down the page.
+(function () {
+  var panel = document.getElementById('filters');
+  if (!panel || !window.matchMedia) return;
+  var wide = window.matchMedia('(min-width: 981px)');
+  function sync() { if (wide.matches) panel.open = true; }
+  sync();
+  if (wide.addEventListener) wide.addEventListener('change', sync);
+})();
+</script>
+{% endblock %}
