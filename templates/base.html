@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Sehat Haq — Find special-education & disability services in Lahore{% endblock %}</title>
+  <title>{% block title %}DIL Lahore — Find special-education & disability services in Lahore{% endblock %}</title>
   <meta name="description" content="A free directory of special-education and disability services in Lahore — search by need, area, cost, and accessibility.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="{{ url_for('index') }}">Sehat Haq</a>
+    <a class="brand" href="{{ url_for('index') }}">DIL Lahore</a>
     <nav class="main-nav" aria-label="Primary">
       <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>Home</a>
       <a href="{{ url_for('browse') }}" {% if request.endpoint in ('browse', 'facility_detail') %}aria-current="page"{% endif %}>Browse</a>
@@ -60,7 +60,7 @@
 
 <footer class="site-footer">
   <div class="container footer-inner">
-    <p>Disability Inclusive &amp; Learning Lahore, or DIL Lahore, is an independent, non-ranked directory of special-education and disability services in Lahore, compiled from public listings and facility records. Details can change, so confirm fees, hours, and admissions with a facility before visiting.</p>
+    <p>Disability Inclusive Learning Lahore, or DIL Lahore, is an independent, non-ranked directory of special-education and disability services in Lahore, compiled from public listings and facility records. Details can change, so confirm fees, hours, and admissions with a facility before visiting.</p>
     <nav class="footer-links" aria-label="Footer">
       <a href="{{ url_for('index') }}">Home</a>
       <a href="{{ url_for('browse') }}">Browse</a>
