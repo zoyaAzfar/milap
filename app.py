@@ -4,6 +4,10 @@ from flask import Flask, abort, render_template, request, url_for
 
 import data
 
+import json
+from pathlib import Path
+
+
 app = Flask(__name__)
 
 # {{ facility.type|slug }} -> "special-education-school", used for the
@@ -55,13 +59,18 @@ def facility_detail(slug):
     return render_template("facility.html", f=facility, maps_url=maps_url)
 
 
+INSIGHTS_PATH = Path(__file__).parent / "data" / "insights.json"   
+
+def _load_insights():
+    with open(INSIGHTS_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
 @app.route("/insights/")
 def insights():
     return render_template(
         "insights.html",
-        stats=data.compute_insights(),
+        ins=_load_insights(),
         map_points=_map_points(data.FACILITIES),
-        cost_categories=data.COST_CATEGORIES,
         facility_types=data.FACILITY_TYPES,
     )
 
