@@ -1,0 +1,664 @@
+{
+  "total": 62,
+  "indicators": {
+    "n": 62,
+    "speech_therapy": 66.1,
+    "occupational_therapy": 41.9,
+    "psl": 3.2,
+    "wheelchair_yes": 85.5,
+    "wheelchair_unknown": 14.5,
+    "wheelchair_no": 0.0,
+    "fee_published": 72.6,
+    "fee_amount_published": 9.7,
+    "free": 40.3,
+    "subsidized": 22.6,
+    "paid": 9.7,
+    "phone": 100.0,
+    "hours": 96.8,
+    "website": 98.4,
+    "age_stated": 53.2,
+    "transport": 58.1,
+    "median_fee_pkr_midpoint": 2625.0,
+    "financial_assistance": null,
+    "waiting_period_median_weeks": null,
+    "all_three_contacts": 96.8
+  },
+  "cost_by_type": {
+    "Special Education School": {
+      "Free": 20,
+      "Subsidized": 6,
+      "Paid": 0,
+      "Not Published": 2,
+      "n": 28
+    },
+    "Therapy": {
+      "Free": 3,
+      "Subsidized": 7,
+      "Paid": 6,
+      "Not Published": 15,
+      "n": 31
+    },
+    "Vocational Training": {
+      "Free": 2,
+      "Subsidized": 1,
+      "Paid": 0,
+      "Not Published": 0,
+      "n": 3
+    }
+  },
+  "cost_by_ownership": {
+    "Government": {
+      "Free": 23,
+      "Subsidized": 0,
+      "Paid": 0,
+      "Not Published": 1,
+      "n": 24
+    },
+    "Nonprofit": {
+      "Free": 2,
+      "Subsidized": 13,
+      "Paid": 2,
+      "Not Published": 0,
+      "n": 17
+    },
+    "Private": {
+      "Free": 0,
+      "Subsidized": 1,
+      "Paid": 4,
+      "Not Published": 16,
+      "n": 21
+    }
+  },
+  "cost_by_area": {
+    "Lahore Cantt": {
+      "Free": 1,
+      "Subsidized": 2,
+      "Paid": 1,
+      "Not Published": 4,
+      "n": 8
+    },
+    "Lahore City": {
+      "Free": 8,
+      "Subsidized": 1,
+      "Paid": 0,
+      "Not Published": 0,
+      "n": 9
+    },
+    "Model Town": {
+      "Free": 12,
+      "Subsidized": 9,
+      "Paid": 5,
+      "Not Published": 11,
+      "n": 37
+    },
+    "Raiwind": {
+      "Free": 1,
+      "Subsidized": 1,
+      "Paid": 0,
+      "Not Published": 2,
+      "n": 4
+    },
+    "Shalimar": {
+      "Free": 3,
+      "Subsidized": 1,
+      "Paid": 0,
+      "Not Published": 0,
+      "n": 4
+    }
+  },
+  "facilities_by_area": {
+    "Model Town": 37,
+    "Lahore City": 9,
+    "Lahore Cantt": 8,
+    "Shalimar": 4,
+    "Raiwind": 4
+  },
+  "services": {
+    "groups": [
+      [
+        "Vocational / employment",
+        43
+      ],
+      [
+        "Speech & language therapy",
+        41
+      ],
+      [
+        "Academic / special education",
+        37
+      ],
+      [
+        "Recreation & arts",
+        34
+      ],
+      [
+        "Physiotherapy / physical rehab",
+        30
+      ],
+      [
+        "Behavioural / ABA / autism therapy",
+        26
+      ],
+      [
+        "Occupational therapy",
+        26
+      ],
+      [
+        "Family support / outreach",
+        25
+      ],
+      [
+        "Assessment & early identification",
+        20
+      ],
+      [
+        "Counselling / mental health",
+        20
+      ],
+      [
+        "General therapy (unspecified)",
+        15
+      ],
+      [
+        "Life skills / daily living",
+        11
+      ],
+      [
+        "PSL / Braille (communication access)",
+        6
+      ],
+      [
+        "Medical",
+        3
+      ],
+      [
+        "Other",
+        0
+      ]
+    ],
+    "distinct_raw": 42
+  },
+  "disability": {
+    "groups": [
+      [
+        "Intellectual disability",
+        34
+      ],
+      [
+        "Autism",
+        30
+      ],
+      [
+        "Physical / motor",
+        25
+      ],
+      [
+        "Hearing",
+        23
+      ],
+      [
+        "Vision",
+        20
+      ],
+      [
+        "Speech & language",
+        17
+      ],
+      [
+        "Developmental delay/disorder",
+        15
+      ],
+      [
+        "Learning difficulty",
+        15
+      ],
+      [
+        "ADHD / behavioural / mental health",
+        2
+      ]
+    ],
+    "generic_inclusive_count": 2,
+    "distinct_raw": 13
+  },
+  "matrix": {
+    "rows": [
+      "ADHD / behavioural / mental health",
+      "Autism",
+      "Developmental delay/disorder",
+      "Hearing",
+      "Intellectual disability",
+      "Learning difficulty",
+      "Physical / motor",
+      "Speech & language",
+      "Vision"
+    ],
+    "cols": [
+      "Academic / special education",
+      "Assessment & early identification",
+      "Behavioural / ABA / autism therapy",
+      "Counselling / mental health",
+      "Family support / outreach",
+      "General therapy (unspecified)",
+      "Life skills / daily living",
+      "Medical",
+      "Occupational therapy",
+      "PSL / Braille (communication access)",
+      "Physiotherapy / physical rehab",
+      "Recreation & arts",
+      "Speech & language therapy",
+      "Vocational / employment"
+    ],
+    "values": [
+      [
+        0,
+        0,
+        2,
+        1,
+        2,
+        0,
+        0,
+        0,
+        2,
+        0,
+        2,
+        0,
+        2,
+        1
+      ],
+      [
+        19,
+        10,
+        23,
+        8,
+        14,
+        7,
+        8,
+        2,
+        24,
+        0,
+        18,
+        11,
+        26,
+        13
+      ],
+      [
+        7,
+        6,
+        13,
+        4,
+        6,
+        2,
+        4,
+        1,
+        11,
+        0,
+        6,
+        6,
+        13,
+        7
+      ],
+      [
+        13,
+        6,
+        6,
+        9,
+        11,
+        4,
+        0,
+        1,
+        4,
+        2,
+        12,
+        12,
+        16,
+        21
+      ],
+      [
+        19,
+        11,
+        17,
+        13,
+        17,
+        9,
+        6,
+        2,
+        16,
+        0,
+        21,
+        20,
+        27,
+        24
+      ],
+      [
+        6,
+        3,
+        13,
+        4,
+        7,
+        0,
+        1,
+        1,
+        11,
+        0,
+        8,
+        4,
+        13,
+        6
+      ],
+      [
+        14,
+        8,
+        10,
+        13,
+        13,
+        8,
+        4,
+        2,
+        10,
+        0,
+        18,
+        17,
+        19,
+        22
+      ],
+      [
+        8,
+        7,
+        11,
+        4,
+        9,
+        5,
+        4,
+        3,
+        11,
+        0,
+        8,
+        6,
+        13,
+        9
+      ],
+      [
+        10,
+        4,
+        4,
+        8,
+        9,
+        4,
+        3,
+        0,
+        5,
+        4,
+        12,
+        16,
+        14,
+        19
+      ]
+    ]
+  },
+  "geography": {
+    "population_total": 13628854.051451378,
+    "children_total": 4953414.197195521,
+    "nearest_any": {
+      "n_facilities": 62,
+      "median_km": 1.862771213348584,
+      "p90_km": 5.154096398743637,
+      "mean_km": 2.547277929213045,
+      "pct_pop_within_3km": 70.32300856271077,
+      "pct_pop_within_5km": 89.02728072300374,
+      "pct_pop_within_10km": 98.08035590912479
+    },
+    "nearest_by_offer": {
+      "Speech & language therapy": {
+        "n_facilities": 41,
+        "median_km": 2.2479177263875463,
+        "p90_km": 5.731345112196391,
+        "mean_km": 2.9122072615600616,
+        "pct_pop_within_3km": 66.37661787023296,
+        "pct_pop_within_5km": 85.82966944861417,
+        "pct_pop_within_10km": 97.11848032822279
+      },
+      "Occupational therapy": {
+        "n_facilities": 26,
+        "median_km": 3.206222853011425,
+        "p90_km": 8.331212127593664,
+        "mean_km": 3.998586745069525,
+        "pct_pop_within_3km": 46.77205735970517,
+        "pct_pop_within_5km": 71.75659471983717,
+        "pct_pop_within_10km": 93.44708831024944
+      },
+      "PSL / Braille (communication access)": {
+        "n_facilities": 6,
+        "median_km": 4.708551011560771,
+        "p90_km": 13.827164539535778,
+        "mean_km": 6.474082763905225,
+        "pct_pop_within_3km": 29.649275719320283,
+        "pct_pop_within_5km": 52.81426336768349,
+        "pct_pop_within_10km": 80.45637900670674
+      },
+      "Wheelchair accessible": {
+        "n_facilities": 53,
+        "median_km": 2.100588833334021,
+        "p90_km": 5.832118960685031,
+        "mean_km": 2.854446498853369,
+        "pct_pop_within_3km": 66.41839889885841,
+        "pct_pop_within_5km": 85.66938287629617,
+        "pct_pop_within_10km": 97.06076584247903
+      },
+      "Free or subsidized": {
+        "n_facilities": 39,
+        "median_km": 2.359920557054331,
+        "p90_km": 5.983694599262433,
+        "mean_km": 3.1155486801733514,
+        "pct_pop_within_3km": 61.87361483967931,
+        "pct_pop_within_5km": 84.11388765881779,
+        "pct_pop_within_10km": 96.56747975972499
+      },
+      "Free only": {
+        "n_facilities": 25,
+        "median_km": 3.4187891422610837,
+        "p90_km": 8.493087773444921,
+        "mean_km": 4.272960510710087,
+        "pct_pop_within_3km": 43.80713500687523,
+        "pct_pop_within_5km": 70.80867723482334,
+        "pct_pop_within_10km": 93.1745895441104
+      },
+      "Lists ADHD / behavioural / mental health": {
+        "n_facilities": 3,
+        "median_km": 6.924394190904157,
+        "p90_km": 14.507185988776946,
+        "mean_km": 7.946048040567986,
+        "pct_pop_within_3km": 13.0894597253471,
+        "pct_pop_within_5km": 31.951836659332717,
+        "pct_pop_within_10km": 75.60914987667869
+      },
+      "Lists Autism": {
+        "n_facilities": 31,
+        "median_km": 2.8726568555714795,
+        "p90_km": 8.407460999277948,
+        "mean_km": 3.786564163456087,
+        "pct_pop_within_3km": 50.91488157322407,
+        "pct_pop_within_5km": 75.79838766458434,
+        "pct_pop_within_10km": 94.41068081554201
+      },
+      "Lists Developmental delay/disorder": {
+        "n_facilities": 17,
+        "median_km": 4.438677646471108,
+        "p90_km": 11.923541381646194,
+        "mean_km": 5.518481149079853,
+        "pct_pop_within_3km": 34.86770608904436,
+        "pct_pop_within_5km": 54.39816433847772,
+        "pct_pop_within_10km": 85.57926227231704
+      },
+      "Lists Hearing": {
+        "n_facilities": 25,
+        "median_km": 3.207727536471797,
+        "p90_km": 8.176015807891776,
+        "mean_km": 4.1723332206909385,
+        "pct_pop_within_3km": 45.28956196779347,
+        "pct_pop_within_5km": 70.77166967626547,
+        "pct_pop_within_10km": 93.93967831291951
+      },
+      "Lists Intellectual disability": {
+        "n_facilities": 35,
+        "median_km": 2.283688314727395,
+        "p90_km": 5.982823553296923,
+        "mean_km": 3.049323889570463,
+        "pct_pop_within_3km": 64.10522799301185,
+        "pct_pop_within_5km": 84.86728958159212,
+        "pct_pop_within_10km": 96.44691583287815
+      },
+      "Lists Learning difficulty": {
+        "n_facilities": 16,
+        "median_km": 3.8005077811342582,
+        "p90_km": 9.88177062816682,
+        "mean_km": 4.865928273201121,
+        "pct_pop_within_3km": 39.22955982645572,
+        "pct_pop_within_5km": 63.443415005981876,
+        "pct_pop_within_10km": 90.20171777955218
+      },
+      "Lists Physical / motor": {
+        "n_facilities": 26,
+        "median_km": 2.5451908080022605,
+        "p90_km": 7.675604676183557,
+        "mean_km": 3.6191545264032903,
+        "pct_pop_within_3km": 57.25064683170149,
+        "pct_pop_within_5km": 78.41563834033286,
+        "pct_pop_within_10km": 94.33561157097918
+      },
+      "Lists Speech & language": {
+        "n_facilities": 19,
+        "median_km": 3.318878039387604,
+        "p90_km": 10.118688590618106,
+        "mean_km": 4.452679047811949,
+        "pct_pop_within_3km": 45.84274209654784,
+        "pct_pop_within_5km": 69.43795002036235,
+        "pct_pop_within_10km": 89.52921021303519
+      },
+      "Lists Vision": {
+        "n_facilities": 22,
+        "median_km": 2.7342690742197284,
+        "p90_km": 6.68596451531968,
+        "mean_km": 3.520947568617311,
+        "pct_pop_within_3km": 55.367183532107425,
+        "pct_pop_within_5km": 81.63810584120294,
+        "pct_pop_within_10km": 95.90803015134988
+      }
+    }
+  },
+  "group_coverage": [
+    {
+      "area": "Lahore Cantt",
+      "population": 2446753.4321485683,
+      "median_km_to_nearest": 1.840824193042446,
+      "pct_pop_beyond_5km": 16.874990869196907,
+      "facilities": 8,
+      "facilities_per_100k": 0.3269638818070425,
+      "children_0_14": 861649.2877038894,
+      "children_per_facility": 107706.16096298618,
+      "disabled_count": 2381,
+      "facilities_per_10k_disabled": 33.59932801343973
+    },
+    {
+      "area": "Lahore City",
+      "population": 2785032.615768969,
+      "median_km_to_nearest": 1.8019800069147611,
+      "pct_pop_beyond_5km": 5.501168267810714,
+      "facilities": 9,
+      "facilities_per_100k": 0.3231560000066653,
+      "children_0_14": 1013874.97357679,
+      "children_per_facility": 112652.77484186555,
+      "disabled_count": 8417,
+      "facilities_per_10k_disabled": 10.692645835808483
+    },
+    {
+      "area": "Model Town",
+      "population": 5458757.167271614,
+      "median_km_to_nearest": 1.3579981388828255,
+      "pct_pop_beyond_5km": 5.202382728652128,
+      "facilities": 37,
+      "facilities_per_100k": 0.6778099641771255,
+      "children_0_14": 1977343.3941560427,
+      "children_per_facility": 53441.713355568725,
+      "disabled_count": 6910,
+      "facilities_per_10k_disabled": 53.545586107091175
+    },
+    {
+      "area": "Raiwind",
+      "population": 726893.8624575138,
+      "median_km_to_nearest": 4.354800351707443,
+      "pct_pop_beyond_5km": 37.86524075039366,
+      "facilities": 4,
+      "facilities_per_100k": 0.5502866658519621,
+      "children_0_14": 271059.922149012,
+      "children_per_facility": 67764.980537253,
+      "disabled_count": 14594,
+      "facilities_per_10k_disabled": 2.7408524050979852
+    },
+    {
+      "area": "Shalimar",
+      "population": 2211416.9738047123,
+      "median_km_to_nearest": 2.8531268604795224,
+      "pct_pop_beyond_5km": 16.737304644913642,
+      "facilities": 4,
+      "facilities_per_100k": 0.18087950157667712,
+      "children_0_14": 829486.6196097867,
+      "children_per_facility": 207371.65490244667,
+      "disabled_count": 3873,
+      "facilities_per_10k_disabled": 10.327911179963852
+    }
+  ],
+  "data_quality": {
+    "raw_rows": 68,
+    "name_only_stub_rows_excluded": 6,
+    "stub_names": [
+      "STEP Ahead Bringing Out Abilities Lahore",
+      "Bismillah Autism Center",
+      "Academy for Slow Learners Pakistan",
+      "Autism and Special Education Center Lahore",
+      "Center for Special Needs Lahore",
+      "High Q Inclusive School Lahore"
+    ],
+    "analysed": 62,
+    "csv_encoding_detected": "mac_roman",
+    "missing_coordinates": 0,
+    "facilities_sharing_exact_coordinates": [
+      "Govt. High School of Special Education for H.I (Girls), Lahore",
+      "Government Readymade Garments, Lahore"
+    ],
+    "wheelchair_no_recorded": 0,
+    "age_group_missing_pct": 46.8,
+    "sources": {
+      "Punjab Special Education Department": 29,
+      "Google Maps": 12,
+      "Special Education Department Facility Directory": 11,
+      "LittlePureSouls": 5,
+      "One Small Wonder": 4,
+      "Marham": 1
+    },
+    "single_source_note": "Most records rest on one directory or listing; none independently verified by phone/visit unless noted in verified_date.",
+    "generic_inclusive_facilities": 2,
+    "unmapped_labels": {
+      "disabilities": {},
+      "services": {}
+    },
+    "geo_status": [
+      "Point-in-polygon assignment done; 0 facilities fell outside the boundary file.",
+      "WorldPop access metrics computed (straight-line distance).",
+      "Disability denominators joined."
+    ],
+    "date_last_verified": null,
+    "thresholds_km": {
+      "access": [
+        3,
+        5,
+        10
+      ],
+      "isolation": 3
+    }
+  },
+  "notes": {
+    "multilabel": "Facilities list several services and disability groups, so bars do not sum to the total.",
+    "matrix": "A matrix cell counts facilities that list both the disability group and the service group; the directory does not say which service is offered to which population.",
+    "distance": "Distances are straight-line. Real travel is longer."
+  }
+}
