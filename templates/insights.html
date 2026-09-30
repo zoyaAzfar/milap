@@ -1,18 +1,38 @@
 {% extends "base.html" %}
 {% from "_map.html" import facility_map %}
 
-{% block title %}Insights — DIL Lahore{% endblock %}
+{% block title %}Insights — Sehat Haq{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  /* Additions for the new charts only; uses your existing tokens. Move into style.css if you prefer. */
+  .bar-label small { color: var(--muted); }
+  .bar-track.dual { position: relative; }
+  .bar-track.dual .bar-fill { position: absolute; left: 0; top: 0; }
+  .bar-fill-soft { background: #b9d6c8; }
+  .bar-track.stack { display: flex; height: 22px; border-radius: 6px; }
+  .bar-track.stack .seg { height: 100%; color: #fff; font-size: 0.8rem; line-height: 22px; text-align: center; }
+  .seg-free { background: var(--slate); }
+  .seg-sub  { background: #6f9f8a; }
+  .seg-paid { background: var(--coral); }
+  .seg-np   { background: #b8bfc4; color: var(--ink) !important; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 0.925rem; color: var(--muted); }
+  .legend i { display: inline-block; width: 0.8em; height: 0.8em; margin-right: 6px; border-radius: 2px; }
+</style>
 {% endblock %}
 
 {% block content %}
+{% set geo = ins.geography or {} %}
+{% set ind = ins.indicators %}
+{% set dq = ins.data_quality %}
+{% set N = ins.total %}
 
 <section class="page-head">
   <div class="container">
     <div class="page-head-panel">
       <h1>What does our data show?</h1>
+      <p>Based on {{ N }} facilities in Lahore. Last verified: {{ dq.date_last_verified or 'not yet verified by phone or visit' }}.</p>
     </div>
   </div>
 </section>
@@ -23,7 +43,7 @@
   <div class="insight-section">
     <div class="section-header">
       <h2>Geography</h2>
-      <p>How are services and facilities in Lahore distributed?</p>
+      <p>How are facilities in Lahore spread out, and how far do people live from one?</p>
     </div>
 
     {{ facility_map(
@@ -32,51 +52,100 @@
         'Every facility with a mappable location — tap a pin for details.',
         facility_types) }}
 
+    {% set areas = (ins.group_coverage or [])|sort(attribute='pct_pop_beyond_5km', reverse=true)|list %}
+    {% if geo.nearest_any %}
+    {% set na = geo.nearest_any %}
     <div class="stat-strip stat-strip-light">
-      <div class="stat">
-        <strong>{{ stats.geography.area_count }}</strong>
-        distinct neighborhoods
-      </div>
-      <div class="stat">
-        <strong>{{ stats.geography.single_areas|length }}</strong>
-        of those have only 1 listed facility
-      </div>
-      <div class="stat">
-        <strong>{{ stats.geography.avg_dist_center_km|round(1) }} km</strong>
-        average distance from central Lahore
-      </div>
-      <div class="stat">
-        <strong>{{ stats.geography.beyond_10km_pct|round|int }}%</strong>
-        of facilities sit over 10 km out
-      </div>
+      <div class="stat"><strong>{{ N }}</strong>facilities listed</div>
+      <div class="stat"><strong>{{ na.median_km|round(1) }} km</strong>median distance to the nearest one</div>
+      <div class="stat"><strong>{{ na.pct_pop_within_5km|round|int }}%</strong>of residents live within 5 km of one</div>
+      {% if areas %}
+      <div class="stat"><strong>{{ areas[0].pct_pop_beyond_5km|round|int }}%</strong>of {{ areas[0].area }} residents live beyond 5 km</div>
+      {% endif %}
     </div>
+    {% endif %}
 
-    <p class="note">Neighborhood names are parsed from each facility's address and are approximate. The map above shows exact positions.</p>
-
-    <h3>Where facilities are concentrated</h3>
+    <h3>Facilities by tehsil</h3>
+    {% set by_area = ins.facilities_by_area.items()|sort(attribute='1', reverse=true)|list %}
     <div class="bar-list">
-      {% for area, count in stats.geography.top_areas %}
+      {% for area, count in by_area %}
       <div class="bar-row">
         <div class="bar-label">{{ area }}</div>
-        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / stats.geography.top_areas[0][1] * 100)|round(1) }}%;"></div></div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / by_area[0][1] * 100)|round(1) }}%;"></div></div>
         <div class="bar-value">{{ count }}</div>
       </div>
       {% endfor %}
     </div>
 
+    {% if areas %}
+    <h3>Residents living more than 5 km from any facility</h3>
+    <div class="bar-list">
+      {% for a in areas %}
+      <div class="bar-row">
+        <div class="bar-label">{{ a.area }}</div>
+        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: {{ a.pct_pop_beyond_5km|round(1) }}%;"></div></div>
+        <div class="bar-value">{{ a.pct_pop_beyond_5km|round|int }}%</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="callout">
-      <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
       <p>
-        We can see that coverage is uneven: {{ stats.geography.top_areas[0][0] }} alone accounts for {{ stats.geography.top_areas[0][1] }} of the {{ stats.total }} facilities, while
-        {{ stats.geography.single_areas|length }} other neighborhoods — including {{ stats.geography.single_areas[:6]|join(', ') }}{% if stats.geography.single_areas|length > 6 %}, and more{% endif %} —
-        have just one. On average a facility is {{ stats.geography.avg_nearest_neighbor_km|round(1) }} km from its nearest neighbor, but
-        {{ stats.geography.isolated_count }} have no other listed facility within 3 km{% if stats.geography.isolated_top %} — the most isolated being
-        {{ stats.geography.isolated_top|map(attribute=0)|join('; ') }}{% endif %}. The listing farthest from the city center,
-        {{ stats.geography.farthest_name }}, is about {{ stats.geography.farthest_km|round(1) }} km out.
-        Distances are straight-line and measured from an approximate central point in Gulberg, so real travel times will be longer.
+        {{ by_area[0][0] }} holds {{ by_area[0][1] }} of the {{ N }} facilities.
+        {% if areas %}{{ areas[0].area }} has only {{ ins.facilities_by_area[areas[0].area] }} and is where residents are farthest from one.{% endif %}
+        Distances are straight-line, so real travel is longer. Resident numbers are estimated from WorldPop population grids.
       </p>
     </div>
   </div>
+
+  <!-- ============================== ACCESS BY NEED ============================== -->
+  {% if geo.nearest_by_offer %}
+  {% set off = geo.nearest_by_offer %}
+  {% set wanted = [
+      ('Speech & language therapy', 'Speech & language therapy'),
+      ('Occupational therapy', 'Occupational therapy'),
+      ('PSL / Braille (communication access)', 'Sign language / Braille'),
+      ('Wheelchair accessible', 'Wheelchair accessible (as listed)'),
+      ('Free or subsidized', 'Free or subsidized'),
+      ('Free only', 'Free only'),
+      ('Lists Autism', 'Lists autism'),
+      ('Lists ADHD / behavioural / mental health', 'Lists ADHD / behavioural / mental health')] %}
+  {% set offers = [{'label': 'Any facility', 'm': geo.nearest_any}] %}
+  {% for key, label in wanted %}{% if key in off %}{% set _ = offers.append({'label': label, 'm': off[key]}) %}{% endif %}{% endfor %}
+  {% set offers = offers|sort(attribute='m.pct_pop_within_3km', reverse=true) %}
+  <div class="insight-section">
+    <div class="section-header">
+      <h2>Distance to what a family needs</h2>
+      <p>Share of residents living within 3 km and 5 km of a facility that offers it. Facility counts are in brackets.</p>
+    </div>
+    <div class="bar-list">
+      {% for o in offers %}
+      <div class="bar-row">
+        <div class="bar-label">{{ o.label }} <small>({{ o.m.n_facilities }})</small></div>
+        <div class="bar-track dual">
+          <div class="bar-fill bar-fill-soft" style="width: {{ o.m.pct_pop_within_5km|round(1) }}%;"></div>
+          <div class="bar-fill" style="width: {{ o.m.pct_pop_within_3km|round(1) }}%;"></div>
+        </div>
+        <div class="bar-value">{{ o.m.pct_pop_within_3km|round|int }}% / {{ o.m.pct_pop_within_5km|round|int }}%</div>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="note">Dark bar and first figure: within 3 km. Light bar and second figure: within 5 km.</p>
+
+    {% set psl = off.get('PSL / Braille (communication access)') %}
+    {% set adhd = off.get('Lists ADHD / behavioural / mental health') %}
+    {% if psl and adhd %}
+    <div class="callout">
+      <p>
+        The average resident lives close to some facility, but far fewer live close to sign language or Braille support
+        ({{ psl.pct_pop_within_3km|round|int }}% within 3 km) or to a facility that lists ADHD, behavioural or mental health needs
+        ({{ adhd.pct_pop_within_3km|round|int }}%).
+      </p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
 
   <!-- ============================== COST ============================== -->
   <div class="insight-section">
@@ -85,91 +154,106 @@
       <p>Are facilities free, subsidized or paid?</p>
     </div>
 
+    <div class="stat-strip stat-strip-light">
+      <div class="stat"><strong>{{ ind.free|round|int }}%</strong>free</div>
+      <div class="stat"><strong>{{ ind.subsidized|round|int }}%</strong>subsidized</div>
+      <div class="stat"><strong>{{ ind.paid|round|int }}%</strong>paid, with the fee published</div>
+      <div class="stat"><strong>{{ (100 - ind.fee_published)|round|int }}%</strong>publish no fee</div>
+    </div>
+
+    {% set cats = [('Free', 'seg-free'), ('Subsidized', 'seg-sub'), ('Paid', 'seg-paid'), ('Not Published', 'seg-np')] %}
+    <h3>By ownership</h3>
     <div class="bar-list">
-      {% for cat in cost_categories %}
+      {% for owner in ['Government', 'Nonprofit', 'Private'] if owner in ins.cost_by_ownership %}
+      {% set r = ins.cost_by_ownership[owner] %}
       <div class="bar-row">
-        <div class="bar-label">{{ cat }}</div>
-        <div class="bar-track"><div class="bar-fill" style="width: {{ (stats.cost_pct.get(cat, 0))|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ stats.cost_counts.get(cat, 0) }} ({{ stats.cost_pct.get(cat, 0)|round|int }}%)</div>
+        <div class="bar-label">{{ owner }} <small>({{ r.n }})</small></div>
+        <div class="bar-track stack">
+          {% for cat, cls in cats %}<div class="seg {{ cls }}" style="width: {{ (r[cat] / r.n * 100)|round(1) }}%;" title="{{ cat }}: {{ r[cat] }}">{{ r[cat] if r[cat] else '' }}</div>{% endfor %}
+        </div>
+        <div class="bar-value"></div>
       </div>
       {% endfor %}
     </div>
+    <ul class="legend">
+      {% for cat, cls in cats %}<li><i class="{{ cls }}"></i>{{ 'No fee published' if cat == 'Not Published' else cat }}</li>{% endfor %}
+    </ul>
 
+    {% set priv = ins.cost_by_ownership.get('Private') %}
     <div class="callout">
-      <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
       <p>
-        {{ stats.cost_pct.get('Free', 0)|round|int }}% of facilities report no fee at all, but {{ stats.information.not_published_count }} facilities
-        ({{ stats.cost_pct.get('Not Published', 0)|round|int }}%) don't publish a price anywhere, so families has to call before knowing whether a place is
-        affordable.
+        {% if priv %}Private facilities are the hardest to price: {{ priv['Not Published'] }} of {{ priv.n }} publish no fee, so families have to call to find out.{% endif %}
+        {% if ind.median_fee_pkr_midpoint %}Among facilities that publish a paid fee, the median is about PKR {{ '{:,.0f}'.format(ind.median_fee_pkr_midpoint) }} (midpoint of published ranges).{% endif %}
       </p>
     </div>
   </div>
 
   <!-- ============================== SERVICES ============================== -->
+  {% set svc = ins.services.groups|rejectattr('1', 'equalto', 0)|list %}
   <div class="insight-section">
     <div class="section-header">
       <h2>Services</h2>
-      <p>{{ stats.services.distinct }} distinct services appear across the directory</p>
+      <p>{{ ins.services.distinct_raw }} distinct services are listed, grouped here into {{ svc|length }} categories. Facilities offer several, so bars do not add up to {{ N }}.</p>
     </div>
 
     <h3>Most common</h3>
     <div class="bar-list">
-      {% for service, count in stats.services.common %}
+      {% for service, count in svc[:10] %}
       <div class="bar-row">
         <div class="bar-label">{{ service }}</div>
-        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / stats.services.common[0][1] * 100)|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ count }}</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / svc[0][1] * 100)|round(1) }}%;"></div></div>
+        <div class="bar-value">{{ count }} ({{ (count / N * 100)|round|int }}%)</div>
       </div>
       {% endfor %}
     </div>
 
     <h3>Least common</h3>
     <ul class="chip-list">
-      {% for service, count in stats.services.scarce %}
+      {% for service, count in svc[-3:] %}
       <li>{{ service }} ({{ count }})</li>
       {% endfor %}
     </ul>
   </div>
 
   <!-- ============================== DISABILITY ============================== -->
+  {% set dis = ins.disability.groups %}
   <div class="insight-section">
     <div class="section-header">
-      <h2>Disability populations</h2>
-      <p>{{ stats.disability.distinct }} disability categories are named across the directory</p>
+      <h2>Disability groups</h2>
+      <p>Facilities name several groups, so bars do not add up to {{ N }}.</p>
     </div>
 
-    <h3>Best served</h3>
     <div class="bar-list">
-      {% for disability, count in stats.disability.best_served %}
+      {% for group, count in dis %}
       <div class="bar-row">
-        <div class="bar-label">{{ disability }}</div>
-        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / stats.disability.best_served[0][1] * 100)|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ count }}</div>
-      </div>
-      {% endfor %}
-    </div>
-
-    <h3>Least served</h3>
-    <div class="bar-list">
-      {% for disability, count in stats.disability.underserved %}
-      <div class="bar-row">
-        <div class="bar-label">{{ disability }}</div>
-        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: {{ (count / stats.disability.best_served[0][1] * 100)|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ count }}</div>
+        <div class="bar-label">{{ group }}</div>
+        <div class="bar-track"><div class="bar-fill{% if loop.last %} bar-fill-accent{% endif %}" style="width: {{ (count / dis[0][1] * 100)|round(1) }}%;"></div></div>
+        <div class="bar-value">{{ count }} ({{ (count / N * 100)|round|int }}%)</div>
       </div>
       {% endfor %}
     </div>
 
     <div class="callout">
-      <svg class="icon" aria-hidden="true"><use href="#icon-note"/></svg>
       <p>
-        {{ stats.disability.best_served[0][0] }} is named by {{ stats.disability.best_served[0][1] }} of {{ stats.total }} facilities, and the top
-        {{ stats.disability.best_served|length }} categories each have {{ stats.disability.best_served[-1][1] }} or more. At the other end,
-        categories such as {{ stats.disability.underserved|map(attribute=0)|join(', ') }} are each named by at most
-        {{ stats.disability.underserved[-1][1] }} {{ 'facility' if stats.disability.underserved[-1][1] == 1 else 'facilities' }} in the directory which is a
-        a real gap for those families, though a few facilities list general labels like "All Disabilities (Inclusive)" and may accept these children too.
+        {{ dis[0][0] }} is named by {{ dis[0][1] }} of {{ N }} facilities. At the other end, {{ dis[-1][0] }} is named by only
+        {{ dis[-1][1] }} {{ 'facility' if dis[-1][1] == 1 else 'facilities' }}, which is a real gap for those families.
+        {{ ins.disability.generic_inclusive_count }} more list general labels such as "All Disabilities (Inclusive)" and may accept these children too.
       </p>
     </div>
+  </div>
+
+  <!-- ============================== ABOUT THE DATA ============================== -->
+  <div class="insight-section">
+    <div class="section-header">
+      <h2>About this data</h2>
+    </div>
+    <p class="note">
+      Sources: {% for name, n in dq.sources.items()|sort(attribute='1', reverse=true) %}{{ name }} ({{ n }}){{ ', ' if not loop.last }}{% endfor %}.
+      Wheelchair access: {{ ind.wheelchair_yes|round|int }}% listed as accessible, {{ ind.wheelchair_unknown|round|int }}% unknown; no facility is recorded as inaccessible.
+      Facilities housed in the same building share a map location.
+      {{ dq.name_only_stub_rows_excluded }} directory entries with no details were left out.
+      Distances are straight-line.
+    </p>
   </div>
 
 </section>
@@ -184,9 +268,9 @@
   document.addEventListener("DOMContentLoaded", function() {
       // Access the raw points dumped from Jinja
       const rawPoints = {{ map_points|tojson }};
-      
+
       // Map to [lat, lon, intensity] format required by leaflet.heat
-      const heatData = rawPoints.map(p => [p.lat, p.lon, 1]); 
+      const heatData = rawPoints.map(p => [p.lat, p.lon, 1]);
 
       // Create gradient layer: Blue (Low) -> Lime (Medium) -> Red (High)
       const heatLayer = L.heatLayer(heatData, {
@@ -195,7 +279,7 @@
           maxZoom: 13,
           gradient: { 0.3: 'blue', 0.6: 'lime', 1.0: 'red' }
       });
-      
+
       // Assuming 'map' is globally exposed in your map.js file
       if (typeof map !== 'undefined') {
           heatLayer.addTo(map);
