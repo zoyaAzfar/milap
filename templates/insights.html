@@ -1,15 +1,28 @@
 {% extends "base.html" %}
 {% from "_map.html" import facility_map %}
 
-{% block title %}Insights — Sehat Haq{% endblock %}
+{# One bar row, with a text alternative for screen readers. `pct` is the 0-100 bar width. #}
+{% macro bar_row(label, pct, value, accent=False, note='') %}
+<div class="bar-row">
+  <div class="bar-label">{{ label }}{% if note %} <small>({{ note }})</small>{% endif %}</div>
+  <div class="bar-track" role="img" aria-label="{{ label }}: {{ value }}">
+    <div class="bar-fill{{ ' bar-fill-accent' if accent }}" style="width: {{ pct|round(1) }}%;"></div>
+  </div>
+  <div class="bar-value">{{ value }}</div>
+</div>
+{% endmacro %}
+
+{% block title %}Insights — DIL Lahore{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{# Hashes are from leafletjs.com/download.html. If the map ever disappears, check the console for an integrity error. #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
   /* Additions for the new charts only; uses your existing tokens. Move into style.css if you prefer. */
   .bar-label small { color: var(--muted); }
-  .bar-track.dual { position: relative; }
-  .bar-track.dual .bar-fill { position: absolute; left: 0; top: 0; }
+  .bar-track.dual { position: relative; min-height: 14px; }
+  .bar-track.dual .bar-fill { position: absolute; left: 0; top: 0; height: 100%; }
   .bar-fill-soft { background: #b9d6c8; }
   .bar-track.stack { display: flex; height: 22px; border-radius: 6px; }
   .bar-track.stack .seg { height: 100%; color: #fff; font-size: 0.8rem; line-height: 22px; text-align: center; }
@@ -19,6 +32,19 @@
   .seg-np   { background: #b8bfc4; color: var(--ink) !important; }
   .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 0.925rem; color: var(--muted); }
   .legend i { display: inline-block; width: 0.8em; height: 0.8em; margin-right: 6px; border-radius: 2px; }
+  .table-scroll { overflow-x: auto; margin-top: 12px; }
+  .data-table { border-collapse: collapse; width: 100%; font-size: 0.925rem; }
+  .data-table th, .data-table td { padding: 6px 10px; text-align: right; border-bottom: 1px solid #e3e6e8; }
+  .data-table th:first-child { text-align: left; font-weight: 600; }
+  details.numbers { margin-top: 14px; }
+  details.numbers summary { cursor: pointer; color: var(--muted); }
+  .matrix th, .matrix td { text-align: center; font-size: 0.85rem; padding: 6px 8px; }
+  .matrix th[scope="row"] { text-align: left; font-weight: 500; min-width: 190px; }
+  .matrix thead th { vertical-align: bottom; font-weight: 600; min-width: 84px; }
+  .matrix thead th small { display: block; font-weight: 400; color: var(--muted); }
+  .matrix td.lown { color: var(--muted); background: transparent; }
+  .matrix td.dark { color: #fff; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
 {% endblock %}
 
@@ -27,6 +53,16 @@
 {% set ind = ins.indicators %}
 {% set dq = ins.data_quality %}
 {% set N = ins.total %}
+
+{# Per-capita coverage, computed once. Rate = facilities per 100,000 children aged 0-14. #}
+{% set cov = [] %}
+{% for a in (ins.group_coverage or []) if a.children_0_14 %}
+  {% set _ = cov.append({'area': a.area, 'n': a.facilities, 'people': a.population, 'kids': a.children_0_14,
+                         'rate': a.facilities / a.children_0_14 * 100000, 'beyond': a.pct_pop_beyond_5km,
+                         'median_km': a.median_km_to_nearest}) %}
+{% endfor %}
+{% set cov = cov|sort(attribute='rate', reverse=true)|list %}
+{% set areas = (ins.group_coverage or [])|sort(attribute='pct_pop_beyond_5km', reverse=true)|list %}
 
 <section class="page-head">
   <div class="container">
@@ -50,8 +86,9 @@
         map_points,
         'Every facility with a mappable location — tap a pin for details.',
         facility_types) }}
+    <p class="note">Use the layer control on the map to show facility density (brighter means more listed facilities).
+      Density reflects how many facilities are listed, not their capacity or quality.</p>
 
-    {% set areas = (ins.group_coverage or [])|sort(attribute='pct_pop_beyond_5km', reverse=true)|list %}
     {% if geo.nearest_any %}
     {% set na = geo.nearest_any %}
     <div class="stat-strip stat-strip-light">
@@ -64,38 +101,54 @@
     </div>
     {% endif %}
 
-    <h3>Facilities by tehsil</h3>
-    {% set by_area = ins.facilities_by_area.items()|sort(attribute='1', reverse=true)|list %}
+    {% if cov %}
+    <h3>Facilities per 100,000 children, by area</h3>
+    <p class="note">Children aged 0–14. The figure in brackets is the number of facilities in that area.</p>
     <div class="bar-list">
-      {% for area, count in by_area %}
-      <div class="bar-row">
-        <div class="bar-label">{{ area }}</div>
-        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / by_area[0][1] * 100)|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ count }}</div>
-      </div>
+      {% for c in cov %}
+      {{ bar_row(c.area, c.rate / cov[0].rate * 100, '%.1f (%d)'|format(c.rate, c.n), accent=loop.last) }}
       {% endfor %}
     </div>
 
-    {% if areas %}
     <h3>Residents living more than 5 km from any facility</h3>
     <div class="bar-list">
       {% for a in areas %}
-      <div class="bar-row">
-        <div class="bar-label">{{ a.area }}</div>
-        <div class="bar-track"><div class="bar-fill bar-fill-accent" style="width: {{ a.pct_pop_beyond_5km|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ a.pct_pop_beyond_5km|round|int }}%</div>
-      </div>
+      {{ bar_row(a.area, a.pct_pop_beyond_5km, '%d%%'|format(a.pct_pop_beyond_5km|round|int), accent=true) }}
       {% endfor %}
     </div>
-    {% endif %}
+
+    <details class="numbers">
+      <summary>See the numbers behind these charts</summary>
+      <div class="table-scroll">
+        <table class="data-table">
+          <caption class="sr-only">Population, children, facilities and distance by area</caption>
+          <thead><tr>
+            <th scope="col">Area</th><th scope="col">Residents</th><th scope="col">Children 0–14</th>
+            <th scope="col">Facilities</th><th scope="col">Per 100k children</th>
+            <th scope="col">Median km to nearest</th><th scope="col">% beyond 5 km</th></tr></thead>
+          <tbody>
+          {% for c in cov %}
+            <tr><th scope="row">{{ c.area }}</th>
+              <td>{{ '{:,.0f}'.format(c.people|round(-3)) }}</td><td>{{ '{:,.0f}'.format(c.kids|round(-3)) }}</td>
+              <td>{{ c.n }}</td><td>{{ '%.1f'|format(c.rate) }}</td>
+              <td>{{ '%.1f'|format(c.median_km) }}</td><td>{{ c.beyond|round|int }}%</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
 
     <div class="callout">
       <p>
-        {{ by_area[0][0] }} holds {{ by_area[0][1] }} of the {{ N }} facilities.
-        {% if areas %}{{ areas[0].area }} has only {{ ins.facilities_by_area[areas[0].area] }} and is where residents are farthest from one.{% endif %}
-        Distances are straight-line, so real travel is longer. Resident numbers are estimated from WorldPop population grids.
+        Per child, {{ cov[0].area }} has the most facilities ({{ '%.1f'|format(cov[0].rate) }} per 100,000) and
+        {{ cov[-1].area }} the fewest ({{ '%.1f'|format(cov[-1].rate) }}), about
+        {{ (cov[0].rate / cov[-1].rate)|round|int }} times fewer.
+        {% if areas %}{{ areas[0].area }} is where residents are farthest from a facility, with {{ areas[0].pct_pop_beyond_5km|round|int }}% living beyond 5 km.{% endif %}
+        Areas follow an older union-council boundary file, so they will not match the 2023 census tehsils exactly.
+        Distances are straight-line, so real travel is longer. Resident and child numbers are estimated from WorldPop population grids.
       </p>
     </div>
+    {% endif %}
   </div>
 
   <!-- ============================== ACCESS BY NEED ============================== -->
@@ -122,7 +175,8 @@
       {% for o in offers %}
       <div class="bar-row">
         <div class="bar-label">{{ o.label }} <small>({{ o.m.n_facilities }})</small></div>
-        <div class="bar-track dual">
+        <div class="bar-track dual" role="img"
+             aria-label="{{ o.label }}: {{ o.m.pct_pop_within_3km|round|int }}% of residents within 3 km, {{ o.m.pct_pop_within_5km|round|int }}% within 5 km">
           <div class="bar-fill bar-fill-soft" style="width: {{ o.m.pct_pop_within_5km|round(1) }}%;"></div>
           <div class="bar-fill" style="width: {{ o.m.pct_pop_within_3km|round(1) }}%;"></div>
         </div>
@@ -130,7 +184,8 @@
       </div>
       {% endfor %}
     </div>
-    <p class="note">Dark bar and first figure: within 3 km. Light bar and second figure: within 5 km.</p>
+    <p class="note">Dark bar and first figure: within 3 km. Light bar and second figure: within 5 km.
+      Rows that say "Lists" also count facilities with a general "all disabilities" label.</p>
 
     {% set psl = off.get('PSL / Braille (communication access)') %}
     {% set adhd = off.get('Lists ADHD / behavioural / mental health') %}
@@ -167,7 +222,8 @@
       {% set r = ins.cost_by_ownership[owner] %}
       <div class="bar-row">
         <div class="bar-label">{{ owner }} <small>({{ r.n }})</small></div>
-        <div class="bar-track stack">
+        <div class="bar-track stack" role="img"
+             aria-label="{{ owner }}: {% for cat, cls in cats %}{{ r[cat] }} {{ ('no fee published' if cat == 'Not Published' else cat)|lower }}{{ ', ' if not loop.last }}{% endfor %}">
           {% for cat, cls in cats %}<div class="seg {{ cls }}" style="width: {{ (r[cat] / r.n * 100)|round(1) }}%;" title="{{ cat }}: {{ r[cat] }}">{{ r[cat] if r[cat] else '' }}</div>{% endfor %}
         </div>
         <div class="bar-value"></div>
@@ -183,6 +239,7 @@
       <p>
         {% if priv %}Private facilities are the hardest to price: {{ priv['Not Published'] }} of {{ priv.n }} publish no fee, so families have to call to find out.{% endif %}
         {% if ind.median_fee_pkr_midpoint %}Among facilities that publish a paid fee, the median is about PKR {{ '{:,.0f}'.format(ind.median_fee_pkr_midpoint) }} (midpoint of published ranges).{% endif %}
+        "Free" is as reported by each facility and may not cover transport or materials.
       </p>
     </div>
   </div>
@@ -198,11 +255,7 @@
     <h3>Most common</h3>
     <div class="bar-list">
       {% for service, count in svc[:10] %}
-      <div class="bar-row">
-        <div class="bar-label">{{ service }}</div>
-        <div class="bar-track"><div class="bar-fill" style="width: {{ (count / svc[0][1] * 100)|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ count }} ({{ (count / N * 100)|round|int }}%)</div>
-      </div>
+      {{ bar_row(service, count / svc[0][1] * 100, '%d (%d%%)'|format(count, (count / N * 100)|round|int)) }}
       {% endfor %}
     </div>
 
@@ -224,11 +277,7 @@
 
     <div class="bar-list">
       {% for group, count in dis %}
-      <div class="bar-row">
-        <div class="bar-label">{{ group }}</div>
-        <div class="bar-track"><div class="bar-fill{% if loop.last %} bar-fill-accent{% endif %}" style="width: {{ (count / dis[0][1] * 100)|round(1) }}%;"></div></div>
-        <div class="bar-value">{{ count }} ({{ (count / N * 100)|round|int }}%)</div>
-      </div>
+      {{ bar_row(group, count / dis[0][1] * 100, '%d (%d%%)'|format(count, (count / N * 100)|round|int), accent=loop.last) }}
       {% endfor %}
     </div>
 
@@ -239,6 +288,59 @@
         {{ ins.disability.generic_inclusive_count }} more list general labels such as "All Disabilities (Inclusive)" and may accept these children too.
       </p>
     </div>
+
+    {# ---- Service x disability matrix. Column-normalised: of the facilities listing a disability group, what % also list each service. ---- #}
+    {% set m = ins.matrix %}
+    {% set dcount = {} %}
+    {% for g, c in ins.disability.groups %}{% set _ = dcount.update({g: c}) %}{% endfor %}
+    {% set svc_order = [] %}
+    {% for name, c in ins.services.groups if name in m.cols and c > 0 %}{% set _ = svc_order.append(name) %}{% endfor %}
+    <h3>What each group can find</h3>
+    <p class="note">
+      Each cell shows, of the facilities that list a disability group, the share that also list a service.
+      This reads from the directory's separate lists, so it shows what a facility lists, not that every service is offered to every group.
+      Groups named by fewer than 5 facilities show counts instead of percentages.
+    </p>
+    <div class="table-scroll">
+      <table class="data-table matrix">
+        <caption class="sr-only">Share of facilities listing each disability group that also list each service category</caption>
+        <thead>
+          <tr><td></td>
+          {% for g, c in ins.disability.groups %}<th scope="col">{{ g }}<small>{{ c }} {{ 'facility' if c == 1 else 'facilities' }}</small></th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+        {% for svc_name in svc_order %}
+          {% set j = m.cols.index(svc_name) %}
+          <tr><th scope="row">{{ svc_name }}</th>
+          {% for g, c in ins.disability.groups %}
+            {% set i = m.rows.index(g) %}
+            {% set k = m['values'][i][j] %}
+            {% if c < 5 %}
+              <td class="lown" title="{{ k }} of {{ c }} facilities">{{ k }}</td>
+            {% else %}
+              {% set p = k / c * 100 %}
+              <td class="{{ 'dark' if p >= 60 }}" style="background: rgba(31,111,139,{{ (p / 100 * 0.8)|round(2) }});"
+                  title="{{ k }} of {{ c }} facilities">{{ p|round|int }}%</td>
+            {% endif %}
+          {% endfor %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% set ih = m.rows.index('Hearing') if 'Hearing' in m.rows else none %}
+    {% set jp = m.cols.index('PSL / Braille (communication access)') if 'PSL / Braille (communication access)' in m.cols else none %}
+    {% set js = m.cols.index('Speech & language therapy') if 'Speech & language therapy' in m.cols else none %}
+    {% if ih is not none and jp is not none and js is not none %}
+    <div class="callout">
+      <p>
+        Of the {{ dcount['Hearing'] }} facilities that list hearing impairment, {{ (m['values'][ih][js] / dcount['Hearing'] * 100)|round|int }}%
+        list speech and language therapy, but only {{ m['values'][ih][jp] }} ({{ (m['values'][ih][jp] / dcount['Hearing'] * 100)|round|int }}%)
+        list sign language or Braille support. Treat this as a prompt to check, since sign language may be used without being listed.
+      </p>
+    </div>
+    {% endif %}
   </div>
 
   <!-- ============================== ABOUT THE DATA ============================== -->
@@ -248,9 +350,10 @@
     </div>
     <p class="note">
       Sources: {% for name, n in dq.sources.items()|sort(attribute='1', reverse=true) %}{{ name }} ({{ n }}){{ ', ' if not loop.last }}{% endfor %}.
-      Wheelchair access: {{ ind.wheelchair_yes|round|int }}% listed as accessible, {{ ind.wheelchair_unknown|round|int }}% unknown; no facility is recorded as inaccessible.
-      Facilities housed in the same building share a map location.
+      Wheelchair access: {{ ind.wheelchair_yes|round|int }}% listed as accessible, {{ ind.wheelchair_unknown|round|int }}% unknown; no facility is recorded as inaccessible, so the accessible share may be overstated.
+      {% if dq.facilities_sharing_exact_coordinates %}{{ dq.facilities_sharing_exact_coordinates|length }} facilities share one map location and may be on the same campus; this has not been verified.{% endif %}
       {{ dq.name_only_stub_rows_excluded }} directory entries with no details were left out.
+      Census 2023 records 403,707 people with a disability in Lahore district (3.1% of residents), a figure widely thought to undercount.
       Distances are straight-line.
     </p>
   </div>
@@ -260,29 +363,28 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-<script src="{{ url_for('static', filename='js/map.js') }}"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Access the raw points dumped from Jinja
-      const rawPoints = {{ map_points|tojson }};
-
-      // Map to [lat, lon, intensity] format required by leaflet.heat
-      const heatData = rawPoints.map(p => [p.lat, p.lon, 1]);
-
-      // Create gradient layer: Blue (Low) -> Lime (Medium) -> Red (High)
-      const heatLayer = L.heatLayer(heatData, {
-          radius: 35,
-          blur: 20,
-          maxZoom: 13,
-          gradient: { 0.3: 'blue', 0.6: 'lime', 1.0: 'red' }
+  // Catch the map the moment map.js creates it, so the heat layer no longer
+  // depends on `map` being a global. This must run BEFORE map.js.
+  (function () {
+    const points = {{ map_points|tojson }};
+    L.Map.addInitHook(function () {
+      const m = this;
+      window.facilityMap = m;
+      m.whenReady(function () {
+        // Viridis-like: colour-blind safe; dark = sparse, bright = dense.
+        const heat = L.heatLayer(points.map(p => [p.lat, p.lon, 1]), {
+          radius: 30, blur: 22, maxZoom: 13,
+          gradient: { 0.0: '#440154', 0.4: '#31688e', 0.7: '#35b779', 1.0: '#fde725' }
+        });
+        heat.addTo(m);
+        L.control.layers(null, { "Facility density": heat }, { collapsed: false }).addTo(m);
       });
-
-      // Assuming 'map' is globally exposed in your map.js file
-      if (typeof map !== 'undefined') {
-          heatLayer.addTo(map);
-      }
-  });
+    });
+  })();
 </script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}
