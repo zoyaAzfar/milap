@@ -44,7 +44,7 @@
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="{{ url_for('index') }}">DIL Lahore</a>
+    <a class="brand" href="{{ url_for('index') }}">MILAP</a>
     <nav class="main-nav" aria-label="Primary">
       <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>Home</a>
       <a href="{{ url_for('browse') }}" {% if request.endpoint in ('browse', 'facility_detail') %}aria-current="page"{% endif %}>Browse</a>
