@@ -1035,19 +1035,32 @@ h1 { line-height: 1.1; }
 [hidden] { display: none !important; }
 
 /* ==========================================================================
-   FIND SUPPORT PAGE: questionnaire form
+   FIND SUPPORT PAGE: form + results spacing
    ========================================================================== */
 
+/* .section sets padding: 56px 0, which wipes the side padding from .container.
+   This puts it back so the form lines up with the heading above it. */
+section.section.container {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
 .qna-form-panel {
-  max-width: 780px;               /* same width as the results list */
-  padding: 32px;
+  max-width: 780px;
+  padding: 40px;
   border-radius: var(--radius);
   background: var(--lilac-soft);
 }
 
-.qna-question { margin-bottom: 28px; }
+/* Grid with a gap, so spacing doesn't depend on margins */
+#qna-form {
+  display: grid;
+  gap: 32px;
+}
+
+.qna-question { margin: 0; }
 .qna-question h3 {
-  margin-bottom: 10px;
+  margin: 0 0 12px;
   font-size: 1.15rem;
 }
 
@@ -1058,16 +1071,18 @@ h1 { line-height: 1.1; }
 .qna-form-panel .field:hover,
 .qna-form-panel .field:focus { border-color: var(--slate); }
 
-.qna-form-panel .btn-block { margin-top: 8px; }
+/* Results */
+.qna-results-wrapper { max-width: 780px; }
+.results-header { margin-bottom: 28px; }
+.qna-results-list { gap: 24px; }
+.qna-results-list .facility-card { padding-left: 0; border-left: 0; }
+.qna-results-list .match-score { margin-bottom: 14px; }
+.qna-results-list .card-heading { margin-bottom: 14px; }
+.qna-results-list .facility-meta { margin: 16px 0 20px; gap: 8px 24px; }
+.empty-state { padding: 24px 0 40px; }
 
 @media (max-width: 640px) {
-  .qna-form-panel { padding: 22px; }
-}
-
-/* ---------- Results: remove the old left stripe ---------- */
-/* The earlier "Find support" rules add a 6px left border and 20px padding,
-   which clash with the flat coloured cards. This resets them. */
-.qna-results-list .facility-card {
-  padding-left: 0;
-  border-left: 0;
+  section.section.container { padding-left: 18px; padding-right: 18px; }
+  .qna-form-panel { padding: 24px; }
+  #qna-form { gap: 24px; }
 }
