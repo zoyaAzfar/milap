@@ -6,6 +6,7 @@
   <div class="container">
     <div class="page-head-panel">
       <h1>Get your customized matches</h1>
+      <p>Answer a few questions about what you're looking for, and we'll show you the facilities that match best.</p>
     </div>
   </div>
 </section>
@@ -14,7 +15,55 @@
 
   <div class="qna-form-panel" id="qna-form-panel">
     <form id="qna-form" action="{{ url_for('qna_finder') }}" method="get">
-      ... (your five .qna-question blocks and the submit button, unchanged) ...
+
+      <div class="qna-question">
+        <h3>1. How old is your child?</h3>
+        <input class="field" type="number" name="age" min="0" max="100" placeholder="e.g. 5">
+      </div>
+
+      <div class="qna-question">
+        <h3>2. What type of support are you looking for?</h3>
+        <select class="field" name="need">
+          <option value="">-- No preference --</option>
+          {% for key, label, icon in options.needs %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="qna-question">
+        <h3>3. Which area of the city is best for you?</h3>
+        <select class="field" name="area">
+          <option value="">-- Anywhere in Lahore --</option>
+          {% for area_option in options.areas %}
+          <option value="{{ area_option }}">{{ area_option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="qna-question">
+        <h3>4. Do you prefer a specific type of facility?</h3>
+        <select class="field" name="type">
+          <option value="">-- No preference --</option>
+          {% for type_option in options.types %}
+          <option value="{{ type_option }}">{{ type_option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="qna-question">
+        <h3>5. What is your cost preference?</h3>
+        <select class="field" name="cost">
+          <option value="">-- No preference --</option>
+          <option value="Free">Free</option>
+          <option value="Subsidized">Subsidized</option>
+          <option value="Paid">Paid</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit" style="font-size: 1.1rem; padding: 16px;">
+        Get my matches
+      </button>
     </form>
   </div>
 
